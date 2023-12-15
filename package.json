@@ -1,0 +1,11 @@
+{
+  "name": "parity-hackathon-2023-winter",
+  "private": true,
+  "workspaces": [
+    "contracts",
+    "webapp"
+  ],
+  "dependencies": {
+    "solmate": "^6.2.0"
+  }
+}
