@@ -1,5 +1,6 @@
 import './globals.css'
 import { TrpcContextProvider } from '@/server/trpcProvider'
+import { ThemeProvider } from './components/material-tailwind'
 
 export default function RootLayout({
   children,
@@ -10,7 +11,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <TrpcContextProvider>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </TrpcContextProvider>
       </body>
     </html>
