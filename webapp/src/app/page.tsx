@@ -1,7 +1,7 @@
 import { useTrpcPreload } from '@/server/appRouter'
 import { RehydrateHandler } from '@/server/trpcProvider'
 import { QuestionList } from '@/components/QuestionList'
-import Login from "./components/Login.tsx"
+import Login from "../components/Login.jsx"
 
 export default async function Home() {
   const trpc = await useTrpcPreload()
