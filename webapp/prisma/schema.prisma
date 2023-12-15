@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext]
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  handle    String     @unique
+  address   String     @unique
+  createdAt DateTime   @default(now()) @map("created_at")
+  Pledge    Pledge[]
+  Question  Question[]
+  Answer    Answer[]
+  Holder    Holder[]
+  TradeLog  TradeLog[]
+
+  @@map("users")
+}
+
+model Pledge {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  amount    BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("pledges")
+}
+
+model Question {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id])
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  questionId Int      @map("question_id")
+  tokenId    Int      @unique @map("token_id")
+  body       String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User       @relation(fields: [userId], references: [id])
+  question Question   @relation(fields: [questionId], references: [id])
+  TradeLog TradeLog[]
+
+  @@map("answers")
+}
+
+model Holder {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  tokenId   Int      @map("token_id")
+  shares    BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("holders")
+}
+
+model TradeLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  tokenId    Int      @map("token_id")
+  address    String
+  amount     BigInt
+  tokens     BigInt
+  creatorFee BigInt   @map("creator_fee")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user   User?  @relation(fields: [userId], references: [id])
+  answer Answer @relation(fields: [tokenId], references: [tokenId])
+
+  @@map("trade_logs")
+}

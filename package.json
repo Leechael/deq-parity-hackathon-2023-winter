@@ -6,6 +6,5 @@
     "webapp"
   ],
   "dependencies": {
-    "solmate": "^6.2.0"
   }
 }
