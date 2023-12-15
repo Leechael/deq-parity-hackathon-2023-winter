@@ -24,7 +24,7 @@ const QuestionSchema = z.object({
 // Routes
 //
 
-const questionList = publicProcedure
+const listLatestQuestions = publicProcedure
   .input(z.object({
     page: z.number().default(1),
     limit: z.number().default(10),
@@ -45,7 +45,26 @@ const questionList = publicProcedure
     })
     return { items }
   })
-  
+
+const createQuestion = publicProcedure
+  .input(z.object({
+    title: z.string(),
+    body: z.string(),
+  }))
+  .output(QuestionSchema)
+  .mutation(async ({ input: { title, body } }) => {
+    const question = await prisma.question.create({
+      data: {
+        title,
+        body,
+        userId: 1,
+      },
+      include: {
+        user: true,
+      }
+    })
+    return question
+  })
 
 
 
@@ -54,7 +73,8 @@ const questionList = publicProcedure
 //
 
 const questionRouter = router({
-  lastest: questionList,
+  lastest: listLatestQuestions,
+  create: createQuestion,
 })
 
 export const appRouter = router({
