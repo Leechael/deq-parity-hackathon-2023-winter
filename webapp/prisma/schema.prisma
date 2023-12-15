@@ -18,10 +18,10 @@ model User {
   address   String     @unique
   createdAt DateTime   @default(now()) @map("created_at")
   Pledge    Pledge[]
-  Question  Question[]
-  Answer    Answer[]
-  Holder    Holder[]
-  TradeLog  TradeLog[]
+  questions Question[]
+  answers   Answer[]
+  holdings  Holder[]
+  trades    TradeLog[]
 
   @@map("users")
 }
@@ -60,7 +60,7 @@ model Answer {
 
   user     User       @relation(fields: [userId], references: [id])
   question Question   @relation(fields: [questionId], references: [id])
-  TradeLog TradeLog[]
+  trades   TradeLog[]
 
   @@map("answers")
 }
