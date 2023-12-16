@@ -1,11 +1,16 @@
 "use client";
 import { Button } from './material-tailwind'
 import { useSession, signIn, signOut } from "next-auth/react"
-export default () => {
+const Login = () => {
+  const { data: session } = useSession()
+  if (session) {
+    console.log(session)
+    return (
+      <Button onClick={() => signOut()}> Sign Out </Button>
+    )
+  }
   return (
-    <>
-      <Button onClick={() => signIn()}> Google sign in </Button>
-      <Button onClick={() => signOut()}> Google sign out </Button>
-    </>
+    <Button onClick={() => signIn()}> Sign In </Button>
   )
 }
+export default Login
