@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   Button,
 } from "@/components/material-tailwind";
+import Markdown from 'react-markdown'
 
 export function QuestionList({ type }: { type: string }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
@@ -31,7 +32,8 @@ export function QuestionList({ type }: { type: string }) {
           <CardHeader floated={false} color="blue-gray" className="flex flex-col p-4">
             <Typography variant="small">{question.user.handle}</Typography>
             <Typography variant="h6">{question.title}</Typography>
-            <Typography variant="paragraph">{question.body}</Typography>
+            {/* <Typography variant="paragraph">{question.body}</Typography> */}
+            <Markdown>{question.body}</Markdown>
           </CardHeader>
           <CardBody className="flex flex-col">
             {question.answers?.length ?
@@ -43,7 +45,8 @@ export function QuestionList({ type }: { type: string }) {
                       <Typography variant="small">{answer.user.handle}</Typography>
                     </ListItemPrefix>
                     <div>
-                      <Typography variant="paragraph">{answer.body}</Typography>
+                      {/* <Typography variant="paragraph">{answer.body}</Typography> */}
+                      <Markdown>{answer.body}</Markdown>
                       <div className="flex justify-between items-center mt-2">
                         <div className="flex flex-col">
                           <Typography variant="h5">$1800</Typography>
