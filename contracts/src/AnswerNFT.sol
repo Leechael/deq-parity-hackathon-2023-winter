@@ -98,8 +98,9 @@ contract AnswerNFT is ERC1155 {
     require(sentFee, "Send creator fee failed.");
   }
 
-
-  // Internal
+  //
+  // Price calculator
+  //
 
   function _curve(uint x) private pure returns (uint y) {
     if (x <= CREATOR_PREMINT_SHARE) {
