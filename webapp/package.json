@@ -20,11 +20,13 @@
     "@trpc/react-query": "^10.43.3",
     "@trpc/server": "^10.43.3",
     "dedent": "^1.5.1",
+    "jotai": "^2.6.0",
     "next": "13.5.6",
     "next-auth": "^4.24.5",
     "ramda": "^0.29.1",
     "react": "^18",
     "react-dom": "^18",
+    "viem": "^1.20.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
