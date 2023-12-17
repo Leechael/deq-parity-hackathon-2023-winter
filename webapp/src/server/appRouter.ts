@@ -17,6 +17,15 @@ const QuestionSchema = z.object({
     id: z.number(),
     handle: z.string(),
   }),
+  answers: z.array(z.object({
+    id: z.number(),
+    body: z.string(),
+    user: z.object({
+      id: z.number(),
+      handle: z.string(),
+      // avatar: z.string(),
+    })
+  })),
 })
 
 
@@ -28,12 +37,18 @@ const listLatestQuestions = publicProcedure
   .input(z.object({
     page: z.number().default(1),
     limit: z.number().default(10),
+    type: z.string().default('hot'),
   }))
   .output(z.object({
     items: z.array(QuestionSchema)
   }))
-  .query(async ({ input: { page, limit }}) => {
+  .query(async ({ input: { page, limit, type } }) => {
+    let where = {}
+    if (type === 'unanswer') {
+      where = { answers: { none: {} } }
+    }
     const items = await prisma.question.findMany({
+      where,
       orderBy: {
         createdAt: 'desc',
       },
@@ -41,6 +56,7 @@ const listLatestQuestions = publicProcedure
       take: limit,
       include: {
         user: true,
+        answers: { include: { user: true } },
       },
     })
     return { items }
