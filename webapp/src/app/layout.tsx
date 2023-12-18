@@ -15,8 +15,8 @@ import Login from "../components/Login"
 const config = createConfig({
   autoConnect: true,
   publicClient: createPublicClient({
-    // chain: mandala,
-    chain: polygonMumbai,
+    chain: mandala,
+    // chain: polygonMumbai,
     transport: http(),
   })
 })

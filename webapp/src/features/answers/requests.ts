@@ -19,10 +19,10 @@ export const abis = [
 ] as const;
 
 // Acala Testnet
-// export const ANSWER_CONTRACT_ADDRESS = '0x3592D7BD047f069e17D708c31aa25d2c652323a2'
+export const ANSWER_CONTRACT_ADDRESS = '0x3592D7BD047f069e17D708c31aa25d2c652323a2'
 
 // Polygon Mumbai Testnet
-export const ANSWER_CONTRACT_ADDRESS = '0xAa726b8EF06770d81F0110F7A10673839221f644'
+// export const ANSWER_CONTRACT_ADDRESS = '0xAa726b8EF06770d81F0110F7A10673839221f644'
 
 export interface EstimatedPrice {
   price: bigint
