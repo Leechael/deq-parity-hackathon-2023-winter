@@ -11,7 +11,7 @@ import { SiweMessage } from "siwe"
 
 const Login = () => {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session, status, update: updateSession } = useSession()
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const { chain } = useNetwork()
@@ -39,11 +39,10 @@ const Login = () => {
         redirect: false,
         signature,
       })
-      console.log(res)
       router.replace('/')
       return res
     }
-    await signIn(sType)
+    return await signIn(sType)
   }
 
   useEffect(() => {
@@ -58,7 +57,6 @@ const Login = () => {
     )
   }
   return (
-    // <Button onClick={() => router.push('/signIn')}> Sign In </Button>
     <Menu>
       <MenuHandler>
         <Button loading={status === 'loading'}>Sign In</Button>

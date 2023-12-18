@@ -66,6 +66,7 @@ const handler = (req, res) => NextAuth(req, res, {
             });
 
             if (!existingUser) {
+              // TODO should we create Account object?
               const newUser = await prisma.user.create({
                 data: {
                   name: siwe.address,
@@ -93,12 +94,20 @@ const handler = (req, res) => NextAuth(req, res, {
     strategy: 'jwt'
   },
   callbacks: {
-    async session({ session, token, user }: { session: any; token: any }) {
-      // console.log('inSession', session, token, user)
-      if (token) {
-        session.user.name = token.sub
-        session.user.address = token.sub
-        session.user.image = "https://www.fillmurray.com/128/128"
+    async jwt({ token }) {
+      // console.log('inJWT', token)
+      const currentUser = await prisma.user.findUnique({ where: { id: Number(token.sub) } })
+      if (currentUser?.handle) {
+        token.handle = currentUser.handle
+      }
+      return token
+    },
+    async session({ session, token }) {
+      // console.log('inSession', session, token)
+      if (session.user) {
+        // extend session info
+        // @ts-ignore
+        session.user.handle = token.handle
       }
       return session
     },
