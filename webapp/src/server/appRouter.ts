@@ -15,14 +15,16 @@ const QuestionSchema = z.object({
   createdAt: z.date(),
   user: z.object({
     id: z.number(),
-    handle: z.string(),
+    name: z.string().nullable(),
+    handle: z.string().nullable(),
   }),
   answers: z.array(z.object({
     id: z.number(),
     body: z.string(),
     user: z.object({
       id: z.number(),
-      handle: z.string(),
+      name: z.string().nullable(),
+      handle: z.string().nullable(),
       // avatar: z.string(),
     })
   })),

@@ -10,6 +10,7 @@ import { mandala } from '@/utils/chains'
 
 import { ThemeProvider } from '../components/material-tailwind'
 import SessionProvider from "@/components/SessionProvider"
+import WagmiProvider from "@/components/WagmiProvider"
 import Login from "../components/Login"
 
 const config = createConfig({
@@ -28,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen">
         <TrpcContextProvider>
           <WagmiConfig config={config}>
             <SessionProvider>

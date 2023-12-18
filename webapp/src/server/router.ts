@@ -28,8 +28,8 @@ function getCurrentUserIdOrThrows() {
 function auth_middleware({ ctx, next }: MiddlewareArgs) {
   // const { current_user_id, role } = getCurrentUserIdOrThrows(ctx, allows)
   const currentUser = {
-    id: 1,
-    handle: 'alice',
+    id: '1',
+    name: 'alice',
     address: '0x1234567890abcdef1234567890abcdef12345678',
   }
   return next({

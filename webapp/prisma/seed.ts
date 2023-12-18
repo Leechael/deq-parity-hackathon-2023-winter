@@ -8,6 +8,7 @@ async function main() {
     where: { handle: 'alice' },
     update: {},
     create: {
+      name: 'alice',
       handle: 'alice',
       address: '0x8894E0a0c962CB723c1976a4421c95949bE2D4E3',
       questions: {
@@ -41,6 +42,7 @@ async function main() {
     where: { handle: 'pansz' },
     update: {},
     create: {
+      name: 'pansz',
       handle: 'pansz',
       address: '0x16Cc69739064489F16039859c3027AC542D03b1D',
       answers: {
@@ -65,6 +67,7 @@ async function main() {
     where: { handle: 'zhangsan' },
     update: {},
     create: {
+      name: 'zhangsan',
       handle: 'zhangsan',
       address: '0x87C8e61081b256eBcE9D39862F9c2ED98DC9CDCd',
       answers: {
@@ -87,6 +90,7 @@ async function main() {
     where: { handle: 'yaodong' },
     update: {},
     create: {
+      name: 'yaodong',
       handle: 'yaodong',
       address: '0xE356298C49f5F509599f503F11F7fF3a2E6609a2',
       answers: {
@@ -109,6 +113,7 @@ iOS 系统的编译器就是支持Objective C/C++/Swift前端的LLVM
     where: { handle: 'Himself65' },
     update: {},
     create: {
+      name: 'Himself65',
       handle: 'Himself65',
       address: '0x7b2Aa02EfFAA3830429b94d58684954E1C0B331B',
       answers: {
@@ -133,6 +138,7 @@ LLVM实现了的语言：Ruby, Python, Haskell, Java, D, PHP, Pure, Lua, Rust, S
     where: { handle: 'baye' },
     update: {},
     create: {
+      name: 'baye',
       handle: 'baye',
       address: '0xB9cB9c5D2fd7148141f8c7e17751c31D533fD153',
       answers: {

@@ -15,6 +15,8 @@ import {
   ButtonGroup,
   Button,
 } from "@/components/material-tailwind";
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export function QuestionList({ type }: { type: string }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
@@ -29,9 +31,9 @@ export function QuestionList({ type }: { type: string }) {
       {data && data.items.map(question => (
         <Card key={question.id}>
           <CardHeader floated={false} color="blue-gray" className="flex flex-col p-4">
-            <Typography variant="small">{question.user.handle}</Typography>
+            <Typography variant="small">{question.user.name}</Typography>
             <Typography variant="h6">{question.title}</Typography>
-            <Typography variant="paragraph">{question.body}</Typography>
+            <Markdown remarkPlugins={[remarkGfm]}>{question.body}</Markdown>
           </CardHeader>
           <CardBody className="flex flex-col">
             {question.answers?.length ?
@@ -39,11 +41,11 @@ export function QuestionList({ type }: { type: string }) {
                 {question.answers.map((answer) => (
                   <ListItem key={answer.id} className="flex items-start">
                     <ListItemPrefix className="w-24 flex-shrink-0">
-                      <Avatar variant="circular" alt={answer.user.handle} src="https://docs.material-tailwind.com/img/face-1.jpg" />
-                      <Typography variant="small">{answer.user.handle}</Typography>
+                      <Avatar variant="circular" alt={answer.user.name} src="https://docs.material-tailwind.com/img/face-1.jpg" />
+                      <Typography variant="small">{answer.user.name}</Typography>
                     </ListItemPrefix>
                     <div>
-                      <Typography variant="paragraph">{answer.body}</Typography>
+                      <Markdown remarkPlugins={[remarkGfm]}>{answer.body}</Markdown>
                       <div className="flex justify-between items-center mt-2">
                         <div className="flex flex-col">
                           <Typography variant="h5">$1800</Typography>

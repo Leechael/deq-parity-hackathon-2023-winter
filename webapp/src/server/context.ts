@@ -16,7 +16,8 @@ export interface Context {
   req?: FetchContext['req']
   currentUser?: {
     id: number
-    handle: string
+    name?: string
+    handle?: string
     address: `0x${string}`
   }
 }

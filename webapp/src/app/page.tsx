@@ -24,7 +24,7 @@ export default async function Home() {
 
   return (
     <RehydrateHandler data={trpc.dehydrate()}>
-      <main className="flex flex-1 min-h-screen flex-col items-center justify-between p-24">
+      <main className="flex flex-1  flex-col items-center justify-between p-24">
         <div className="flex flex-col w-[700px]">
           <AskButton />
           <Tabs value="Hot" className="pt-6 mt-6">
