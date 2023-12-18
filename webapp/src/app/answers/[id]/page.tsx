@@ -1,4 +1,4 @@
-import { AnswerView, AnswerData, BuyConfirmDialog } from '@/components/AnswerView'
+import { AnswerView, AnswerData, BuyConfirmDialog, SellConfirmDialog } from '@/components/AnswerView'
 
 interface PageParams {
   id: string
@@ -11,6 +11,7 @@ export default function AnswerDetailPage({ params }: { params: PageParams }) {
       <AnswerView id={answerId} />
       <AnswerData id={answerId} />
       <BuyConfirmDialog id={answerId} />
+      <SellConfirmDialog id={answerId} />
     </main>
   )
 }

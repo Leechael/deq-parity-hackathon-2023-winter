@@ -46,8 +46,8 @@ export async function getSellPrice(publicClient: PublicClient, id: bigint, amoun
     args: [id, amount],
   })
   return {
-    price: price,
-    priceWithFee: priceWithFee,
+    price: priceWithFee,
+    priceWithFee: price,
     fee: price - priceWithFee,
     id,
     amount,
