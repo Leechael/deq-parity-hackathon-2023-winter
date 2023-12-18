@@ -4,6 +4,10 @@ interface PageParams {
   id: string
 }
 
+export const metadata = {
+  title: 'DeQ - Answer',
+}
+
 export default function AnswerDetailPage({ params }: { params: PageParams }) { 
   const answerId = Number(params.id)
   return (
