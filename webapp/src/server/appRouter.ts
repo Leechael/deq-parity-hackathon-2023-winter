@@ -9,20 +9,22 @@ import prisma from './db'
 //
 
 const QuestionSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   title: z.string(),
   body: z.string(),
   createdAt: z.date(),
   user: z.object({
-    id: z.string(),
+    id: z.number(),
     name: z.string().nullable(),
+    handle: z.string().nullable(),
   }),
   answers: z.array(z.object({
-    id: z.string(),
+    id: z.number(),
     body: z.string(),
     user: z.object({
-      id: z.string(),
+      id: z.number(),
       name: z.string().nullable(),
+      handle: z.string().nullable(),
       // avatar: z.string(),
     })
   })),
@@ -85,7 +87,7 @@ const createQuestion = protectedProcedure
 const createAnswer = protectedProcedure
   .input(z.object({
     tokenId: z.number(),
-    questionId: z.string(),
+    questionId: z.number(),
     body: z.string(),
   }))
   .mutation(async ({ input: { tokenId, questionId, body }, ctx: { currentUser } }) => {
@@ -105,7 +107,7 @@ const createAnswer = protectedProcedure
 
 const getAnswer = publicProcedure
   .input(z.object({
-    id: z.string(),
+    id: z.number(),
   }))
   .query(async ({ input: { id } }) => {
     const answer = await prisma.answer.findUnique({

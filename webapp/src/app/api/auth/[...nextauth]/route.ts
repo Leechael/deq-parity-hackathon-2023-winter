@@ -61,14 +61,13 @@ const handler = (req, res) => NextAuth(req, res, {
           if (result.success) {
             const existingUser = await prisma.user.findUnique({
               where: {
-                id: siwe.address
+                address: siwe.address
               }
             });
 
             if (!existingUser) {
               const newUser = await prisma.user.create({
                 data: {
-                  id: siwe.address,
                   name: siwe.address,
                   address: siwe.address,
                 }

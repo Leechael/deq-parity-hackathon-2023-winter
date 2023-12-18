@@ -13,8 +13,9 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
+  // id                String  @id @default(cuid())
+  id                Int     @id @default(autoincrement())
+  userId            Int     @map("user_id")
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
@@ -33,9 +34,10 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  // id           String   @id @default(cuid())
+  id           Int      @id @default(autoincrement())
   sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
+  userId       Int      @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -43,8 +45,10 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(cuid())
+  // id            String     @id @default(cuid())
+  id            Int        @id @default(autoincrement())
   name          String?
+  handle        String?    @unique
   address       String?    @unique
   email         String?    @unique
   emailVerified DateTime?  @map("email_verified")
@@ -62,8 +66,10 @@ model User {
 }
 
 model Pledge {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
+  // id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  // userId    String   @map("user_id")
   amount    BigInt
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -73,8 +79,9 @@ model Pledge {
 }
 
 model Question {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
+  // id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
   title     String
   body      String
   createdAt DateTime @default(now()) @map("created_at")
@@ -86,9 +93,10 @@ model Question {
 }
 
 model Answer {
-  id         String   @id @default(cuid())
-  userId     String   @map("user_id")
-  questionId String   @map("question_id")
+  // id         String   @id @default(cuid())
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  questionId Int      @map("question_id")
   tokenId    Int      @unique @map("token_id")
   body       String
   createdAt  DateTime @default(now()) @map("created_at")
@@ -101,8 +109,9 @@ model Answer {
 }
 
 model Holder {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
+  // id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
   tokenId   Int      @map("token_id")
   shares    BigInt
   createdAt DateTime @default(now()) @map("created_at")
@@ -113,8 +122,9 @@ model Holder {
 }
 
 model TradeLog {
-  id         String   @id @default(cuid())
-  userId     String?  @map("user_id")
+  // id         String   @id @default(cuid())
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
   tokenId    Int      @map("token_id")
   address    String
   amount     BigInt
