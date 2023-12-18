@@ -16,6 +16,22 @@ import {
   Button,
 } from "@/components/material-tailwind";
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+
+const markdown = `A paragraph with *emphasis* and **strong importance**.
+
+> A block quote with ~strikethrough~ and a URL: https://reactjs.org.
+
+* Lists
+* [ ] todo
+* [x] done
+
+A table:
+
+| a | b |
+| - | - |
+`
 
 export function QuestionList({ type }: { type: string }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
@@ -33,7 +49,10 @@ export function QuestionList({ type }: { type: string }) {
             <Typography variant="small">{question.user.name}</Typography>
             <Typography variant="h6">{question.title}</Typography>
             {/* <Typography variant="paragraph">{question.body}</Typography> */}
-            <Markdown>{question.body}</Markdown>
+            {console.log(question.body)}
+            {console.log(markdown)}
+            <Markdown remarkPlugins={[remarkGfm]}>{question.body}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown>
           </CardHeader>
           <CardBody className="flex flex-col">
             {question.answers?.length ?
@@ -46,7 +65,7 @@ export function QuestionList({ type }: { type: string }) {
                     </ListItemPrefix>
                     <div>
                       {/* <Typography variant="paragraph">{answer.body}</Typography> */}
-                      <Markdown>{answer.body}</Markdown>
+                      <Markdown remarkPlugins={[remarkGfm]}>{answer.body}</Markdown>
                       <div className="flex justify-between items-center mt-2">
                         <div className="flex flex-col">
                           <Typography variant="h5">$1800</Typography>

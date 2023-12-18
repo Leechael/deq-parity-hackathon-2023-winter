@@ -57,7 +57,6 @@ const handler = (req, res) => NextAuth(req, res, {
             domain: nextAuthUrl.host,
             nonce: credentials.csrfToken,
           })
-          console.log('siwe verify', result)
 
           if (result.success) {
             const existingUser = await prisma.user.findUnique({
@@ -65,7 +64,6 @@ const handler = (req, res) => NextAuth(req, res, {
                 id: siwe.address
               }
             });
-            console.log('exist', existingUser)
 
             if (!existingUser) {
               const newUser = await prisma.user.create({
