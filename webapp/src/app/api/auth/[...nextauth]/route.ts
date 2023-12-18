@@ -3,14 +3,22 @@ import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from 'next-auth/providers/credentials'
-// import { utils } from 'ethers'
-import { getCsrfToken } from "next-auth/react"
+// import { getCsrfToken } from "next-auth/react"
 import { SiweMessage } from "siwe"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+// import { PrismaClient } from "@prisma/client"
+import prisma from '@/server/db'
 
+import { custom } from 'openid-client';
+
+custom.setHttpOptionsDefaults({
+  timeout: 5000,
+});
 
 
 const handler = (req, res) => NextAuth(req, res, {
   // Configure one or more authentication providers
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -49,15 +57,31 @@ const handler = (req, res) => NextAuth(req, res, {
             domain: nextAuthUrl.host,
             nonce: credentials.csrfToken,
           })
+          console.log('siwe verify', result)
 
           if (result.success) {
-            // TODO create or get user
-            return {
-              id: siwe.address,
+            const existingUser = await prisma.user.findUnique({
+              where: {
+                id: siwe.address
+              }
+            });
+            console.log('exist', existingUser)
+
+            if (!existingUser) {
+              const newUser = await prisma.user.create({
+                data: {
+                  id: siwe.address,
+                  name: siwe.address,
+                  address: siwe.address,
+                }
+              });
+              return newUser
             }
+            return existingUser
           }
           return null
         } catch (e) {
+          console.error(e)
           return null
         }
       },
@@ -65,14 +89,20 @@ const handler = (req, res) => NextAuth(req, res, {
     // ...add more providers here
   ],
   pages: {
-    signIn: '/signIn',
+    signIn: '/',
+  },
+  session: {
+    // Set to jwt in order to CredentialsProvider works properly
+    strategy: 'jwt'
   },
   callbacks: {
-    async session({ session, token }: { session: any; token: any }) {
-      console.log('inSession', session, token)
-      session.address = token.sub
-      session.user.name = token.sub
-      session.user.image = "https://www.fillmurray.com/128/128"
+    async session({ session, token, user }: { session: any; token: any }) {
+      // console.log('inSession', session, token, user)
+      if (token) {
+        session.user.name = token.sub
+        session.user.address = token.sub
+        session.user.image = "https://www.fillmurray.com/128/128"
+      }
       return session
     },
   },

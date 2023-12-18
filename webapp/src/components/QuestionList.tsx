@@ -30,7 +30,7 @@ export function QuestionList({ type }: { type: string }) {
       {data && data.items.map(question => (
         <Card key={question.id}>
           <CardHeader floated={false} color="blue-gray" className="flex flex-col p-4">
-            <Typography variant="small">{question.user.handle}</Typography>
+            <Typography variant="small">{question.user.name}</Typography>
             <Typography variant="h6">{question.title}</Typography>
             {/* <Typography variant="paragraph">{question.body}</Typography> */}
             <Markdown>{question.body}</Markdown>
@@ -41,8 +41,8 @@ export function QuestionList({ type }: { type: string }) {
                 {question.answers.map((answer) => (
                   <ListItem key={answer.id} className="flex items-start">
                     <ListItemPrefix className="w-24 flex-shrink-0">
-                      <Avatar variant="circular" alt={answer.user.handle} src="https://docs.material-tailwind.com/img/face-1.jpg" />
-                      <Typography variant="small">{answer.user.handle}</Typography>
+                      <Avatar variant="circular" alt={answer.user.name} src="https://docs.material-tailwind.com/img/face-1.jpg" />
+                      <Typography variant="small">{answer.user.name}</Typography>
                     </ListItemPrefix>
                     <div>
                       {/* <Typography variant="paragraph">{answer.body}</Typography> */}

@@ -12,23 +12,58 @@ datasource db {
   extensions = [citext]
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
 model User {
-  id        Int        @id @default(autoincrement())
-  handle    String     @unique
-  address   String     @unique
-  createdAt DateTime   @default(now()) @map("created_at")
-  Pledge    Pledge[]
-  questions Question[]
-  answers   Answer[]
-  holdings  Holder[]
-  trades    TradeLog[]
+  id            String     @id @default(cuid())
+  name          String?
+  address       String?    @unique
+  email         String?    @unique
+  emailVerified DateTime?  @map("email_verified")
+  image         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  Pledge        Pledge[]
+  questions     Question[]
+  answers       Answer[]
+  holdings      Holder[]
+  trades        TradeLog[]
+  Account       Account[]
+  Session       Session[]
 
   @@map("users")
 }
 
 model Pledge {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
   amount    BigInt
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -38,8 +73,8 @@ model Pledge {
 }
 
 model Question {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
   title     String
   body      String
   createdAt DateTime @default(now()) @map("created_at")
@@ -51,9 +86,9 @@ model Question {
 }
 
 model Answer {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  questionId Int      @map("question_id")
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  questionId String   @map("question_id")
   tokenId    Int      @unique @map("token_id")
   body       String
   createdAt  DateTime @default(now()) @map("created_at")
@@ -66,8 +101,8 @@ model Answer {
 }
 
 model Holder {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
   tokenId   Int      @map("token_id")
   shares    BigInt
   createdAt DateTime @default(now()) @map("created_at")
@@ -78,8 +113,8 @@ model Holder {
 }
 
 model TradeLog {
-  id         Int      @id @default(autoincrement())
-  userId     Int?     @map("user_id")
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id")
   tokenId    Int      @map("token_id")
   address    String
   amount     BigInt
