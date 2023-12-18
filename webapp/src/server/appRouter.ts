@@ -103,6 +103,21 @@ const createAnswer = protectedProcedure
     return answer
   })
 
+const getAnswer = publicProcedure
+  .input(z.object({
+    id: z.number(),
+  }))
+  .query(async ({ input: { id } }) => {
+    const answer = await prisma.answer.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        question: true,
+      }
+    })
+    return answer
+  })
+
 //
 // Final
 //
@@ -114,6 +129,7 @@ const questionRouter = router({
 
 const answerRouter = router({
   create: createAnswer,
+  get: getAnswer,
 })
 
 export const appRouter = router({
