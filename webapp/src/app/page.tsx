@@ -14,7 +14,9 @@ import {
 } from "@/components/material-tailwind";
 import AskButton from '@/components/AskButton'
 
-
+export const metadata = {
+  title: 'DeQ',
+}
 
 export default async function Home() {
   const trpc = await useTrpcPreload()

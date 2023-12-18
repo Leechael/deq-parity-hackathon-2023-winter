@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createServerSideHelpers } from '@trpc/react-query/server'
-import { publicProcedure, router } from './router'
+import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
 import prisma from './db'
 
@@ -62,18 +62,18 @@ const listLatestQuestions = publicProcedure
     return { items }
   })
 
-const createQuestion = publicProcedure
+const createQuestion = protectedProcedure
   .input(z.object({
     title: z.string(),
     body: z.string(),
   }))
-  .output(QuestionSchema)
-  .mutation(async ({ input: { title, body } }) => {
+  .output(QuestionSchema.omit({ answers: true }))
+  .mutation(async ({ input: { title, body }, ctx: { currentUser } }) => {
     const question = await prisma.question.create({
       data: {
         title,
         body,
-        userId: 1,
+        userId: currentUser.id,
       },
       include: {
         user: true,
@@ -82,7 +82,41 @@ const createQuestion = publicProcedure
     return question
   })
 
+const createAnswer = protectedProcedure
+  .input(z.object({
+    tokenId: z.number(),
+    questionId: z.number(),
+    body: z.string(),
+  }))
+  .mutation(async ({ input: { tokenId, questionId, body }, ctx: { currentUser } }) => {
+    const answer = await prisma.answer.create({
+      data: {
+        body,
+        tokenId,
+        questionId,
+        userId: currentUser.id,
+      },
+      include: {
+        user: true,
+      }
+    })
+    return answer
+  })
 
+const getAnswer = publicProcedure
+  .input(z.object({
+    id: z.number(),
+  }))
+  .query(async ({ input: { id } }) => {
+    const answer = await prisma.answer.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        question: true,
+      }
+    })
+    return answer
+  })
 
 //
 // Final
@@ -93,8 +127,14 @@ const questionRouter = router({
   create: createQuestion,
 })
 
+const answerRouter = router({
+  create: createAnswer,
+  get: getAnswer,
+})
+
 export const appRouter = router({
   questions: questionRouter,
+  answers: answerRouter,
 })
 
 export type AppRouter = typeof appRouter

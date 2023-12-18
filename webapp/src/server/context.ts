@@ -15,6 +15,8 @@ type FetchContext = inferAsyncReturnType<typeof createFetchContext>
 export interface Context {
   req?: FetchContext['req']
   currentUser?: {
-    nickname: string
+    id: number
+    handle: string
+    address: `0x${string}`
   }
 }

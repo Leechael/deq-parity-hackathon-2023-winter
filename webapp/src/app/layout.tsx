@@ -1,11 +1,26 @@
+'use client';
+
 import './globals.css'
+import { WagmiConfig, createConfig } from 'wagmi'
+import { createPublicClient, http } from 'viem'
+import { polygonMumbai } from 'viem/chains'
+
 import { TrpcContextProvider } from '@/server/trpcProvider'
+import { mandala } from '@/utils/chains'
+
 import { ThemeProvider } from '../components/material-tailwind'
 import SessionProvider from "@/components/SessionProvider"
 import WagmiProvider from "@/components/WagmiProvider"
 import Login from "../components/Login"
 
-
+const config = createConfig({
+  autoConnect: true,
+  publicClient: createPublicClient({
+    // chain: mandala,
+    chain: polygonMumbai,
+    transport: http(),
+  })
+})
 
 export default function RootLayout({
   children,
@@ -16,8 +31,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen">
         <TrpcContextProvider>
-          <SessionProvider>
-            <WagmiProvider>
+          <WagmiConfig config={config}>
+            <SessionProvider>
               <ThemeProvider>
                 <section className="flex">
                   <section className="flex fixed right-0 top-0 p-4 w-60 justify-center align-center">
@@ -26,8 +41,8 @@ export default function RootLayout({
                   {children}
                 </section>
               </ThemeProvider>
-            </WagmiProvider>
-          </SessionProvider>
+            </SessionProvider>
+          </WagmiConfig>
         </TrpcContextProvider>
       </body>
     </html>
