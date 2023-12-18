@@ -19,19 +19,19 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 
-const markdown = `A paragraph with *emphasis* and **strong importance**.
+// const markdown = `A paragraph with *emphasis* and **strong importance**.
 
-> A block quote with ~strikethrough~ and a URL: https://reactjs.org.
+// > A block quote with ~strikethrough~ and a URL: https://reactjs.org.
 
-* Lists
-* [ ] todo
-* [x] done
+// * Lists
+// * [ ] todo
+// * [x] done
 
-A table:
+// A table:
 
-| a | b |
-| - | - |
-`
+// | a | b |
+// | - | - |
+// `
 
 export function QuestionList({ type }: { type: string }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
@@ -49,10 +49,10 @@ export function QuestionList({ type }: { type: string }) {
             <Typography variant="small">{question.user.name}</Typography>
             <Typography variant="h6">{question.title}</Typography>
             {/* <Typography variant="paragraph">{question.body}</Typography> */}
-            {console.log(question.body)}
-            {console.log(markdown)}
+            {/* {console.log(question.body)}
+            {console.log(markdown)} */}
             <Markdown remarkPlugins={[remarkGfm]}>{question.body}</Markdown>
-            <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown>
+            {/* <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown> */}
           </CardHeader>
           <CardBody className="flex flex-col">
             {question.answers?.length ?
