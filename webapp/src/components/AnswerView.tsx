@@ -22,7 +22,7 @@ import {
   DialogFooter,
   Input,
 } from '@material-tailwind/react'
-import { formatEther, parseAbi } from 'viem'
+import { formatEther, parseAbi, parseEther } from 'viem'
 import { polygonMumbai } from 'viem/chains'
 import { usePublicClient, useAccount, useConnect, useWalletClient, useContractWrite, usePrepareContractWrite, useNetwork, useSwitchNetwork } from 'wagmi'
 import { InjectedConnector } from '@wagmi/connectors/injected'
@@ -43,9 +43,10 @@ export function BuyConfirmDialog({ id }: { id: number }) {
   const { isConnected } = useAccount()
 
   const { chain } = useNetwork()
-  // const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
-  const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
-  const needSwitchChain = chain?.id !== polygonMumbai.id
+  // const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
+  // const needSwitchChain = chain?.id !== polygonMumbai.id
+  const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
+  const needSwitchChain = chain?.id !== mandala.id
 
   const { config } = usePrepareContractWrite({
     address: ANSWER_CONTRACT_ADDRESS,
@@ -53,7 +54,8 @@ export function BuyConfirmDialog({ id }: { id: number }) {
     functionName: 'buy',
     args: [BigInt(id), BigInt(amount * 10000) * BigInt(1e14)],
     value: price?.priceWithFee,
-    enabled: !!(amount && amount > 0 && isConnected),
+    // value: BigInt(1e17),
+    enabled: !!(amount && amount > 0 && price && price.priceWithFee > 0 && isConnected),
   })
   const { isLoading, write, } = useContractWrite({
     ...config,
@@ -159,8 +161,8 @@ export function SellConfirmDialog({ id }: { id: number }) {
   const { isConnected } = useAccount()
 
   const { chain } = useNetwork()
-  // const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
-  const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
+  const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
+  // const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
   const needSwitchChain = chain?.id !== polygonMumbai.id
 
   const { config } = usePrepareContractWrite({
