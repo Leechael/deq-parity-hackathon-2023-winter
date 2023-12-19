@@ -44,12 +44,11 @@ export default function RootLayout({
           <WagmiConfig config={config}>
             <SessionProvider>
               <ThemeProvider>
-                <section className="flex">
-                  <section className="flex fixed right-0 top-0 p-4 w-60 justify-center align-center">
-                    <Login></Login>
-                  </section>
-                  {children}
-                </section>
+                <nav className="container flex flex-row justify-between items-center mx-auto px-8 py-4">
+                  <a href="/"><img src="/logo.png" alt="logo" className="w-20" /></a>
+                  <Login />
+                </nav>
+                {children}
               </ThemeProvider>
             </SessionProvider>
           </WagmiConfig>
