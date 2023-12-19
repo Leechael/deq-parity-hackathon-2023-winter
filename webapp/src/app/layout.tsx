@@ -1,9 +1,12 @@
 'use client';
 
 import './globals.css'
-import { WagmiConfig, createConfig } from 'wagmi'
+import { WagmiConfig, createConfig, configureChains } from 'wagmi'
 import { createPublicClient, http } from 'viem'
 import { polygonMumbai } from 'viem/chains'
+import { publicProvider } from 'wagmi/providers/public'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+
 
 import { TrpcContextProvider } from '@/server/trpcProvider'
 import { mandala } from '@/utils/chains'
@@ -13,13 +16,20 @@ import SessionProvider from "@/components/SessionProvider"
 import WagmiProvider from "@/components/WagmiProvider"
 import Login from "../components/Login"
 
+// const config = createConfig({
+//   autoConnect: true,
+//   publicClient: createPublicClient({
+//     chain: mandala,
+//     // chain: polygonMumbai,
+//     transport: http(),
+//   })
+// })
+const { chains, publicClient } = configureChains([mandala], [publicProvider()])
 const config = createConfig({
-  autoConnect: true,
-  publicClient: createPublicClient({
-    chain: mandala,
-    // chain: polygonMumbai,
-    transport: http(),
-  })
+  connectors: [
+    new InjectedConnector({ chains })
+  ],
+  publicClient,
 })
 
 export default function RootLayout({

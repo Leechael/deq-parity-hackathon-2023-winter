@@ -10,15 +10,13 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from '@/server/db'
 
 import { custom } from 'openid-client';
-import { NextApiRequest, NextApiResponse } from "next"
-import { NextRequest } from "next/server"
+import type { AuthOptions } from "next-auth"
 
 custom.setHttpOptionsDefaults({
   timeout: 5000,
 });
 
-
-const handler = (req: NextRequest, res: NextApiResponse) => NextAuth(req as unknown as NextApiRequest, res, {
+export const authOptions: AuthOptions = {
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -73,6 +71,7 @@ const handler = (req: NextRequest, res: NextApiResponse) => NextAuth(req as unkn
                 data: {
                   name: siwe.address,
                   address: siwe.address,
+                  image: 'https://effigy.im/',
                 }
               });
               return { ...newUser, id: `${newUser.id}` }
@@ -110,10 +109,15 @@ const handler = (req: NextRequest, res: NextApiResponse) => NextAuth(req as unkn
         // extend session info
         // @ts-ignore
         session.user.handle = token.handle
+        // @ts-ignore
+        session.user.id = Number(token.sub)
       }
+      // console.log('nextauthsession: ', session)
       return session
     },
   },
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
