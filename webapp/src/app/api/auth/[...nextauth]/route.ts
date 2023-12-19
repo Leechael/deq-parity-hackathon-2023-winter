@@ -74,9 +74,9 @@ export const authOptions: AuthOptions = {
                   image: 'https://effigy.im/',
                 }
               });
-              return { ...newUser, id: newUser.id }
+              return newUser
             }
-            return { ...existingUser, id: existingUser.id }
+            return existingUser
           }
           return null
         } catch (e) {
