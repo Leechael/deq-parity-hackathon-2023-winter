@@ -4,6 +4,7 @@ import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { getSession } from 'next-auth/react';
 import { getServerSession } from 'next-auth'
+import type { Session } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export async function createFetchContext(opts: FetchCreateContextFnOptions) {
@@ -27,13 +28,14 @@ export interface Context {
     handle?: string
     address: `0x${string}`
   },
-  session?: {
-    user?: {
-      name?: string
-      email?: string
-      image?: string
-      handle?: string
-      id?: number
-    }
-  }
+  session: Session | null
+  // session?: {
+  //   user?: {
+  //     name?: string
+  //     email?: string
+  //     image?: string
+  //     handle?: string
+  //     id?: number
+  //   }
+  // }
 }
