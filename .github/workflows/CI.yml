@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    name: Ensure it can build successful
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codes
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: cd webapp && npm install
+      - run: cd webapp && npm run lint && npm run build
