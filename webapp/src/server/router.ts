@@ -1,6 +1,8 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 
 import { type Context } from './context'
+import prisma from './db'
+
 
 //
 // Create the tRPC instance.
@@ -21,17 +23,13 @@ type AuthedContext = Omit<Context, 'currentUser'> & Required<Pick<Context, 'curr
 
 type MiddlewareArgs = Parameters<Parameters<typeof t.middleware>[0]>[0]
 
-function getCurrentUserIdOrThrows() {
-  // TODO
-}
 
-function auth_middleware({ ctx, next }: MiddlewareArgs) {
-  // const { current_user_id, role } = getCurrentUserIdOrThrows(ctx, allows)
-  const currentUser = {
-    id: 1,
-    name: 'alice',
-    address: '0x1234567890abcdef1234567890abcdef12345678',
+async function auth_middleware({ ctx, next }: MiddlewareArgs) {
+  let currentUser
+  if (!ctx?.session?.user?.id) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
+  currentUser = await prisma.user.findUnique({ where: { id: ctx.session.user.id } })
   return next({
     ctx: { ...ctx, currentUser } as AuthedContext,
   })

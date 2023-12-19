@@ -1,8 +1,10 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
 import { createServerSideHelpers } from '@trpc/react-query/server'
 import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
 import prisma from './db'
+import { TRPCClientError } from '@trpc/client'
 
 //
 // Output Schemas
@@ -120,6 +122,28 @@ const getAnswer = publicProcedure
     return answer
   })
 
+const setUserHandleName = protectedProcedure
+  .input(z.object({
+    handle: z.string(),
+    name: z.string(),
+    check: z.boolean().default(false),
+  }))
+  .mutation(async ({ input: { handle, name, check }, ctx: { currentUser } }) => {
+    const existHandleUser = await prisma.user.findUnique({ where: { handle } })
+    if (existHandleUser) {
+      throw new TRPCError({ code: 'CONFLICT', message: 'Handle exists' })
+    }
+    if (!check) {
+      const user = await prisma.user.update({
+        where: { id: currentUser.id },
+        data: {
+          handle, name
+        }
+      })
+      return user
+    }
+  })
+
 //
 // Final
 //
@@ -134,9 +158,15 @@ const answerRouter = router({
   get: getAnswer,
 })
 
+const userRouter = router({
+  setHandleName: setUserHandleName,
+  // TODO checker
+})
+
 export const appRouter = router({
   questions: questionRouter,
   answers: answerRouter,
+  users: userRouter
 })
 
 export type AppRouter = typeof appRouter

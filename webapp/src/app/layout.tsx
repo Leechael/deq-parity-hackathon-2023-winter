@@ -1,32 +1,48 @@
 'use client';
 
 import './globals.css'
-import { WagmiConfig, createConfig } from 'wagmi'
+import { WagmiConfig, createConfig, configureChains } from 'wagmi'
 import { createPublicClient, http } from 'viem'
 import { polygonMumbai } from 'viem/chains'
+import { publicProvider } from 'wagmi/providers/public'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+
 
 import { TrpcContextProvider } from '@/server/trpcProvider'
 import { mandala } from '@/utils/chains'
 
-import { ThemeProvider } from '../components/material-tailwind'
+import { Dialog, ThemeProvider } from '../components/material-tailwind'
 import SessionProvider from "@/components/SessionProvider"
-import WagmiProvider from "@/components/WagmiProvider"
 import Login from "../components/Login"
+import { BuyConfirmDialog, SellConfirmDialog } from '@/components/AnswerView'
+import { atom, useAtom, useSetAtom } from 'jotai'
+import { buyAnswerIdAtom, sellAnswerIdAtom } from '@/components/atoms'
 
+// const config = createConfig({
+//   autoConnect: true,
+//   publicClient: createPublicClient({
+//     chain: mandala,
+//     // chain: polygonMumbai,
+//     transport: http(),
+//   })
+// })
+const { chains, publicClient } = configureChains([mandala], [publicProvider()])
 const config = createConfig({
-  autoConnect: true,
-  publicClient: createPublicClient({
-    chain: mandala,
-    // chain: polygonMumbai,
-    transport: http(),
-  })
+  connectors: [
+    new InjectedConnector({ chains })
+  ],
+  publicClient,
 })
+
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+
+  const [buyAnswerId, setBuyAnswerId] = useAtom(buyAnswerIdAtom)
+  const [sellAnswerId, setSellAnswerId] = useAtom(sellAnswerIdAtom)
   return (
     <html lang="en">
       <body className="min-h-screen">
@@ -39,6 +55,12 @@ export default function RootLayout({
                   <Login />
                 </nav>
                 {children}
+                <Dialog open={!!buyAnswerId} handler={() => setBuyAnswerId(null)}>
+                  {buyAnswerId ? <BuyConfirmDialog id={buyAnswerId} /> : <></>}
+                </Dialog>
+                <Dialog open={!!sellAnswerId} handler={() => setSellAnswerId(null)}>
+                  {sellAnswerId ? <SellConfirmDialog id={sellAnswerId} /> : <></>}
+                </Dialog>
               </ThemeProvider>
             </SessionProvider>
           </WagmiConfig>
