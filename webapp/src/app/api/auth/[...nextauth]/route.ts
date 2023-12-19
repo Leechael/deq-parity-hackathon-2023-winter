@@ -10,23 +10,25 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from '@/server/db'
 
 import { custom } from 'openid-client';
+import { NextApiRequest, NextApiResponse } from "next"
+import { NextRequest } from "next/server"
 
 custom.setHttpOptionsDefaults({
   timeout: 5000,
 });
 
 
-const handler = (req, res) => NextAuth(req, res, {
+const handler = (req: NextRequest, res: NextApiResponse) => NextAuth(req as unknown as NextApiRequest, res, {
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
     }),
     // TwitterProvider({
     //   clientId: process.env.TWITTER_CLIENT_ID,
@@ -50,12 +52,12 @@ const handler = (req, res) => NextAuth(req, res, {
       async authorize(credentials) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"))
-          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL)
+          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL!)
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
             domain: nextAuthUrl.host,
-            nonce: credentials.csrfToken,
+            nonce: (credentials as any).csrfToken,
           })
 
           if (result.success) {
@@ -73,9 +75,9 @@ const handler = (req, res) => NextAuth(req, res, {
                   address: siwe.address,
                 }
               });
-              return newUser
+              return { ...newUser, id: `${newUser.id}` }
             }
-            return existingUser
+            return { ...existingUser, id: `${existingUser.id}` }
           }
           return null
         } catch (e) {

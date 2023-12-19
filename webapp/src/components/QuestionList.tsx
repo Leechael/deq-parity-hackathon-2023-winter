@@ -41,7 +41,7 @@ export function QuestionList({ type }: { type: string }) {
                 {question.answers.map((answer) => (
                   <ListItem key={answer.id} className="flex items-start">
                     <ListItemPrefix className="w-24 flex-shrink-0">
-                      <Avatar variant="circular" alt={answer.user.name} src="https://docs.material-tailwind.com/img/face-1.jpg" />
+                      <Avatar variant="circular" alt={answer.user.name || ''} src="https://docs.material-tailwind.com/img/face-1.jpg" />
                       <Typography variant="small">{answer.user.name}</Typography>
                     </ListItemPrefix>
                     <div>
