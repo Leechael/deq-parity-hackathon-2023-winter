@@ -29,13 +29,4 @@ export interface Context {
     address: `0x${string}`
   },
   session: Session | null
-  // session?: {
-  //   user?: {
-  //     name?: string
-  //     email?: string
-  //     image?: string
-  //     handle?: string
-  //     id?: number
-  //   }
-  // }
 }

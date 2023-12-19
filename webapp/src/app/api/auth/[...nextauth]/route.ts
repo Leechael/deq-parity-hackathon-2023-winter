@@ -74,9 +74,9 @@ export const authOptions: AuthOptions = {
                   image: 'https://effigy.im/',
                 }
               });
-              return { ...newUser, id: `${newUser.id}` }
+              return { ...newUser, id: newUser.id }
             }
-            return { ...existingUser, id: `${existingUser.id}` }
+            return { ...existingUser, id: existingUser.id }
           }
           return null
         } catch (e) {
@@ -107,9 +107,7 @@ export const authOptions: AuthOptions = {
       // console.log('inSession', session, token)
       if (session.user) {
         // extend session info
-        // @ts-ignore
-        session.user.handle = token.handle
-        // @ts-ignore
+        session.user.handle = token?.handle
         session.user.id = Number(token.sub)
       }
       // console.log('nextauthsession: ', session)
