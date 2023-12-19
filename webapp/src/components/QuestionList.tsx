@@ -17,9 +17,13 @@ import {
 } from "@/components/material-tailwind";
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { atom, useAtom, useSetAtom } from 'jotai'
+import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms';
 
 export function QuestionList({ type }: { type: string }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
+  const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
+  const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
   const onAddAnswer = () => {
     console.log('onAddAnswer')
   }
@@ -51,9 +55,9 @@ export function QuestionList({ type }: { type: string }) {
                           <Typography variant="h5">$1800</Typography>
                           <Typography variant="small">0.4 dot / share</Typography>
                         </div>
-                        <ButtonGroup size="sm" variant="outlined">
-                          <Button>Buy TODO</Button>
-                          <Button>Sell TODO</Button>
+                        <ButtonGroup size="sm" variant="gradient" color="amber">
+                          <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+                          <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
                         </ButtonGroup>
                       </div>
                     </div>

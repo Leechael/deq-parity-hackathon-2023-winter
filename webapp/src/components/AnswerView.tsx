@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { trpcQuery } from '@/server/trpcProvider'
 import { atom, useAtom, useSetAtom } from 'jotai'
 import {
@@ -28,16 +28,15 @@ import { usePublicClient, useAccount, useConnect, useWalletClient, useContractWr
 import { InjectedConnector } from '@wagmi/connectors/injected'
 import { getBuyPrice, getSellPrice, type EstimatedPrice, ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
 import { mandala } from '@/utils/chains'
+import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms';
 
-const buyConfirmDialogVisibleAtom = atom(false)
-const sellConfirmDialogVisibleAtom = atom(false)
 
 export function BuyConfirmDialog({ id }: { id: number }) {
   const [isEstimating, setIsEstimating] = useState(false)
   const [amount, setAmount] = useState(0)
   const [price, setPrice] = useState<EstimatedPrice | null>(null)
 
-  const [visible, setVisible] = useAtom(buyConfirmDialogVisibleAtom)
+  const [buyAnswerId, setBuyAnswerId] = useAtom(buyAnswerIdAtom)
   const publicClient = usePublicClient()
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { isConnected } = useAccount()
@@ -59,11 +58,11 @@ export function BuyConfirmDialog({ id }: { id: number }) {
   })
   const { isLoading, write, } = useContractWrite({
     ...config,
-    onSuccess: () => setVisible(false),
+    onSuccess: () => setBuyAnswerId(null),
   })
 
   return (
-    <Dialog open={visible} handler={() => setVisible(i => !i)}>
+    <>
       <DialogHeader>
         <Typography variant="h5">Buy Shares</Typography>
       </DialogHeader>
@@ -111,7 +110,7 @@ export function BuyConfirmDialog({ id }: { id: number }) {
         <Button
           variant="text"
           color="red"
-          onClick={() => setVisible(i => !i)}
+          onClick={() => setBuyAnswerId(null)}
           className="mr-1"
         >
           <span>Cancel</span>
@@ -146,7 +145,7 @@ export function BuyConfirmDialog({ id }: { id: number }) {
           <span>Confirm</span>
         </Button>
       </DialogFooter>
-    </Dialog>
+    </>
   )
 }
 
@@ -155,7 +154,7 @@ export function SellConfirmDialog({ id }: { id: number }) {
   const [amount, setAmount] = useState(0)
   const [price, setPrice] = useState<EstimatedPrice | null>(null)
 
-  const [visible, setVisible] = useAtom(sellConfirmDialogVisibleAtom)
+  const [sellAnswerId, setSellAnswerId] = useAtom(sellAnswerIdAtom)
   const publicClient = usePublicClient()
   const { connect } = useConnect({ connector: new InjectedConnector() })
   const { isConnected } = useAccount()
@@ -174,11 +173,11 @@ export function SellConfirmDialog({ id }: { id: number }) {
   })
   const { isLoading, write, } = useContractWrite({
     ...config,
-    onSuccess: () => setVisible(false),
+    onSuccess: () => setSellAnswerId(null),
   })
 
   return (
-    <Dialog open={visible} handler={() => setVisible(i => !i)}>
+    <>
       <DialogHeader>
         <Typography variant="h5">Sell Shares</Typography>
       </DialogHeader>
@@ -226,7 +225,7 @@ export function SellConfirmDialog({ id }: { id: number }) {
         <Button
           variant="text"
           color="red"
-          onClick={() => setVisible(i => !i)}
+          onClick={() => setSellAnswerId(null)}
           className="mr-1"
         >
           <span>Cancel</span>
@@ -261,14 +260,14 @@ export function SellConfirmDialog({ id }: { id: number }) {
           <span>Confirm</span>
         </Button>
       </DialogFooter>
-    </Dialog>
+    </>
   )
 }
 
 export function AnswerView({ id }: { id: number }) {
   const { data, isLoading } = trpcQuery.answers.get.useQuery({ id })
-  const setBuyConfirmDialogVisible = useSetAtom(buyConfirmDialogVisibleAtom)
-  const setSellConfirmDialogVisible = useSetAtom(sellConfirmDialogVisibleAtom)
+  const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
+  const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
   return (
     <Card className='w-full'>
       <CardBody>
@@ -295,8 +294,8 @@ export function AnswerView({ id }: { id: number }) {
         <div className="mt-4 border-t border-gray pt-2 flex flex-row justify-between">
           <div />
           <ButtonGroup variant="gradient" color="amber">
-            <Button onClick={() => setBuyConfirmDialogVisible(true)}>Buy</Button>
-            <Button onClick={() => setSellConfirmDialogVisible(true)}>Sell</Button>
+            <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
+            <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
           </ButtonGroup>
         </div>
       </CardBody>
