@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from '@trpc/server'
+import superjson from 'superjson'
 
 import { type Context } from './context'
 import prisma from './db'
@@ -7,7 +8,9 @@ import prisma from './db'
 //
 // Create the tRPC instance.
 //
-export const t = initTRPC.context<Context>().create()
+export const t = initTRPC.context<Context>().create({
+  transformer: superjson,
+})
 
 //
 // Predefined procedures, includes:

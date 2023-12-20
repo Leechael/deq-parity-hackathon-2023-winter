@@ -1,6 +1,7 @@
 'use client';
 
 import { trpcQuery } from '@/server/trpcProvider'
+import Link from 'next/link'
 import {
   Spinner,
   Card,
@@ -35,33 +36,43 @@ export function QuestionList({ type }: { type: string }) {
       {data && data.items.map(question => (
         <Card key={question.id}>
           <CardHeader floated={false} color="blue-gray" className="flex flex-col p-4">
-            <Typography variant="small">{question.user.name}</Typography>
-            <Typography variant="h6">{question.title}</Typography>
+            <Link href={`/u/${question.user.handle}`}>
+              <Typography variant="small">
+                @{question.user.name}
+              </Typography>
+            </Link>
+            <Link href={`/questions/view/${question.id}`}>
+              <Typography variant="h5">
+                {question.title}
+              </Typography>
+            </Link>
             <Markdown remarkPlugins={[remarkGfm]}>{question.body}</Markdown>
           </CardHeader>
           <CardBody className="flex flex-col">
             {question.answers?.length ?
               <List >
                 {question.answers.map((answer) => (
-                  <ListItem key={answer.id} className="flex items-start">
-                    <ListItemPrefix className="w-24 flex-shrink-0">
-                      <Avatar variant="circular" alt={answer.user.name || ''} src="https://docs.material-tailwind.com/img/face-1.jpg" />
-                      <Typography variant="small">{answer.user.name}</Typography>
-                    </ListItemPrefix>
-                    <div>
-                      <Markdown remarkPlugins={[remarkGfm]}>{answer.body}</Markdown>
-                      <div className="flex justify-between items-center mt-2">
-                        <div className="flex flex-col">
-                          <Typography variant="h5">$1800</Typography>
-                          <Typography variant="small">0.4 dot / share</Typography>
+                  <Link href={`/answers/${answer.id}`} key={answer.id}>
+                    <ListItem className="flex items-start">
+                      <ListItemPrefix className="w-24 flex-shrink-0">
+                        <Avatar variant="circular" alt={answer.user.name || ''} src="https://docs.material-tailwind.com/img/face-1.jpg" />
+                        <Typography variant="small">{answer.user.name}</Typography>
+                      </ListItemPrefix>
+                      <div>
+                        <Markdown remarkPlugins={[remarkGfm]}>{answer.body}</Markdown>
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="flex flex-col">
+                            <Typography variant="h5">$1800</Typography>
+                            <Typography variant="small">0.4 dot / share</Typography>
+                          </div>
+                          <ButtonGroup size="sm" variant="gradient" color="amber">
+                            <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+                            <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
+                          </ButtonGroup>
                         </div>
-                        <ButtonGroup size="sm" variant="gradient" color="amber">
-                          <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
-                          <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
-                        </ButtonGroup>
                       </div>
-                    </div>
-                  </ListItem>
+                    </ListItem>
+                  </Link>
                 ))}
               </List>
               : (

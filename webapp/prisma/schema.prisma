@@ -13,7 +13,6 @@ datasource db {
 }
 
 model Account {
-  // id                String  @id @default(cuid())
   id                Int     @id @default(autoincrement())
   userId            Int     @map("user_id")
   type              String
@@ -34,7 +33,6 @@ model Account {
 }
 
 model Session {
-  // id           String   @id @default(cuid())
   id           Int      @id @default(autoincrement())
   sessionToken String   @unique @map("session_token")
   userId       Int      @map("user_id")
@@ -45,7 +43,6 @@ model Session {
 }
 
 model User {
-  // id            String     @id @default(cuid())
   id            Int        @id @default(autoincrement())
   name          String?
   handle        String?    @unique
@@ -54,10 +51,11 @@ model User {
   emailVerified DateTime?  @map("email_verified")
   image         String?
   createdAt     DateTime   @default(now()) @map("created_at")
-  Pledge        Pledge[]
+
   questions     Question[]
   answers       Answer[]
   holdings      Holder[]
+  deposits      QuestionDeposits[]
   trades        TradeLog[]
   Account       Account[]
   Session       Session[]
@@ -65,35 +63,35 @@ model User {
   @@map("users")
 }
 
-model Pledge {
-  // id        String   @id @default(cuid())
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  // userId    String   @map("user_id")
-  amount    BigInt
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@map("pledges")
-}
-
 model Question {
-  // id        String   @id @default(cuid())
-  id        Int      @id @default(autoincrement())
-  userId    Int      @map("user_id")
-  title     String
-  body      String
-  createdAt DateTime @default(now()) @map("created_at")
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  title         String
+  body          String
+  totalDeposit  BigInt   @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  user    User     @relation(fields: [userId], references: [id])
-  answers Answer[]
+  user          User     @relation(fields: [userId], references: [id])
+  answers       Answer[]
+  deposits      QuestionDeposits[]
 
   @@map("questions")
 }
 
+model QuestionDeposits {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  questionId Int      @map("question_id")
+  amount     BigInt
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("question_deposits")
+}
+
 model Answer {
-  // id         String   @id @default(cuid())
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   questionId Int      @map("question_id")
@@ -109,7 +107,6 @@ model Answer {
 }
 
 model Holder {
-  // id        String   @id @default(cuid())
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
   tokenId   Int      @map("token_id")
@@ -119,13 +116,21 @@ model Holder {
   user User @relation(fields: [userId], references: [id])
 
   @@map("holders")
+  @@unique([userId, tokenId])
+}
+
+enum TradeType {
+  CREATED
+  BOUGHT
+  SOLD
 }
 
 model TradeLog {
-  // id         String   @id @default(cuid())
   id         Int      @id @default(autoincrement())
   userId     Int?     @map("user_id")
   tokenId    Int      @map("token_id")
+  type       TradeType
+  blockHash  String   @map("block_hash")
   address    String
   amount     BigInt
   tokens     BigInt

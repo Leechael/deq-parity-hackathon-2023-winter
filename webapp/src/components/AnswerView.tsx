@@ -265,7 +265,7 @@ export function SellConfirmDialog({ id }: { id: number }) {
 }
 
 export function AnswerView({ id }: { id: number }) {
-  const { data, isLoading } = trpcQuery.answers.get.useQuery({ id })
+  const { data, isLoading } = trpcQuery.answers.getById.useQuery({ id })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
   return (
