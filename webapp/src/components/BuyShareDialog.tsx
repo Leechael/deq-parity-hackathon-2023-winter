@@ -1,34 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react'
-import { trpcQuery } from '@/server/trpcProvider'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { useState } from 'react'
+import { useAtom } from 'jotai'
 import {
-  Avatar,
-  Card,
-  CardBody,
   Typography,
   Spinner,
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel,
   Button,
-  ButtonGroup,
-  Dialog,
   DialogBody,
   DialogHeader,
   DialogFooter,
   Input,
 } from '@material-tailwind/react'
-import { formatEther, parseAbi, parseEther } from 'viem'
-import { polygonMumbai } from 'viem/chains'
-import { usePublicClient, useAccount, useConnect, useWalletClient, useContractWrite, usePrepareContractWrite, useNetwork, useSwitchNetwork } from 'wagmi'
+import { formatEther, parseAbi } from 'viem'
+import { usePublicClient, useAccount, useConnect, useContractWrite, usePrepareContractWrite, useNetwork, useSwitchNetwork } from 'wagmi'
 import { InjectedConnector } from '@wagmi/connectors/injected'
-import { getBuyPrice, getSellPrice, type EstimatedPrice, ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
+import { getBuyPrice, type EstimatedPrice, ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
 import { mandala } from '@/utils/chains'
-import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms';
+import { buyAnswerIdAtom } from './atoms';
 
 
 export function BuyShareDialog({ id }: { id: number }) {

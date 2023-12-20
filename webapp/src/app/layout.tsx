@@ -2,11 +2,9 @@
 
 import './globals.css'
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
-import { createPublicClient, http } from 'viem'
-import { polygonMumbai } from 'viem/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { InjectedConnector } from 'wagmi/connectors/injected'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 
 import { TrpcContextProvider } from '@/server/trpcProvider'
 import { mandala } from '@/utils/chains'
@@ -18,16 +16,9 @@ import { buyAnswerIdAtom, sellAnswerIdAtom } from '@/components/atoms'
 import { BuyShareDialog } from '@/components/BuyShareDialog'
 import { SellShareDialog } from '@/components/SellShareDialog'
 
-// const config = createConfig({
-//   autoConnect: true,
-//   publicClient: createPublicClient({
-//     chain: mandala,
-//     // chain: polygonMumbai,
-//     transport: http(),
-//   })
-// })
 const { chains, publicClient } = configureChains([mandala], [publicProvider()])
 const config = createConfig({
+  autoConnect: true,
   connectors: [
     new InjectedConnector({ chains })
   ],
