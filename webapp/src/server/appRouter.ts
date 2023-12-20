@@ -73,9 +73,10 @@ const listLatestQuestions = publicProcedure
     items: z.array(QuestionSchema)
   }))
   .query(async ({ input: { page, limit, type } }) => {
-    let where = {}
-    if (type === 'unanswer') {
-      where = { answers: { none: {} } }
+    const where = {
+      answers: { 
+        [type === 'unanswer' ? 'none' : 'some']: {}
+      }
     }
     const items = await prisma.question.findMany({
       where,

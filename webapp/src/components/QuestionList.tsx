@@ -85,7 +85,7 @@ export function QuestionList({ type }: { type: string }) {
           {/* </CardFooter> */}
         </Card>
       ) : (
-        <Card key={question.id} className="w-full rounded-3xl px-8 py-6 bg-[#faf3e8]" shadow={false}>
+        <Card key={question.id} className="w-full rounded-3xl px-8 py-6 bg-[#f9e8e6]" shadow={false}>
           <div className="flex flex-row gap-4 items-center p-4">
             <Link href={`/u/${question.user.handle}`} className="flex flex-row items-center gap-2.5">
               <Avatar
