@@ -248,29 +248,14 @@ const getAnswer = publicProcedure
       include: {
         user: true,
         question: true,
-        _count: {
-          select: { holders: true }
-        },
       },
     })
     if (!answer) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Answer not found' })
     }
-    const [sharesCounter, valuesCounter] = await Promise.all([
-      prisma.$queryRaw<{shares: bigint}[]>(Prisma.sql`
-        SELECT SUM(shares) as shares FROM public.holders WHERE token_id = ${answer.tokenId}
-      `),
-      prisma.$queryRaw<{type: string, values: bigint}[]>(Prisma.sql`
-        SELECT type, SUM(tokens) as values FROM public.trade_logs WHERE token_id = ${answer.tokenId} GROUP BY type
-      `),
-    ])
-    const bought = valuesCounter.find((counter) => counter.type === 'BOUGHT')
-    const sold = valuesCounter.find((counter) => counter.type === 'SOLD')
     return {
       ...answer,
       user: transformRegisteredUser(answer.user),
-      shares: sharesCounter[0].shares,
-      values: bought ? bought?.values - (sold?.values || BigInt(0)) : BigInt(0),
     }
   })
 

@@ -92,12 +92,15 @@ model QuestionDeposits {
 }
 
 model Answer {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  questionId Int      @map("question_id")
-  tokenId    Int      @unique @map("token_id")
-  body       String
-  createdAt  DateTime @default(now()) @map("created_at")
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  questionId      Int      @map("question_id")
+  tokenId         Int      @unique @map("token_id")
+  body            String
+  shares          BigInt   @default(0)
+  values          BigInt   @default(0)
+  pricePerShare   BigInt   @default(0) @map("price_per_share")
+  createdAt       DateTime @default(now()) @map("created_at")
 
   user     User       @relation(fields: [userId], references: [id])
   question Question   @relation(fields: [questionId], references: [id])

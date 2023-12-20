@@ -16,15 +16,13 @@ import {
   ButtonGroup,
 } from '@material-tailwind/react'
 import Link from 'next/link'
-import { formatEther, parseAbi } from 'viem'
-import { useContractRead } from 'wagmi'
+import { formatEther } from 'viem'
 
 import { MarkdownView } from '@/components/MarkdownView'
 import { TradeList } from '@/components/TradeList'
 import { HolderList } from '@/components/HolderList'
 import { trpcQuery } from '@/server/trpcProvider'
 import { formatRelativeTime } from '@/utils/datetime'
-import { ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
 
 
@@ -32,14 +30,6 @@ export function AnswerView({ id }: { id: number }) {
   const { data, isLoading } = trpcQuery.answers.getById.useQuery({ id })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
-
-  const { data: price } = useContractRead({
-    address: ANSWER_CONTRACT_ADDRESS,
-    abi: parseAbi(abis),
-    functionName: 'getBuyPriceWithFee',
-    args: [BigInt(id), BigInt(1e18)],
-  })
-
   return (
     <Card className="w-full rounded-3xl px-8 py-6" shadow={false}>
       <CardBody>
@@ -78,7 +68,7 @@ export function AnswerView({ id }: { id: number }) {
         <div className="mt-4 border-t border-gray pt-4 flex flex-row justify-between items-center">
           <div>
             <Typography variant="h3">
-              {formatEther(price || BigInt(0))}
+              {formatEther(data?.pricePerShare || BigInt(0))}
               <span className="font-light text-sm ml-1.5">ACA / Share</span>
             </Typography>
           </div>
