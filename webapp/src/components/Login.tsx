@@ -1,8 +1,9 @@
 "use client";
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { getCsrfToken, signIn, useSession, signOut } from "next-auth/react"
-import { Button, Menu, MenuHandler, MenuList, MenuItem, DialogHeader, DialogBody, Dialog, DialogFooter, Input, Typography, Spinner } from '@/components/material-tailwind'
+import { Avatar, Button, Menu, MenuHandler, MenuList, MenuItem, DialogHeader, DialogBody, Dialog, DialogFooter, Input, Typography, Spinner } from '@/components/material-tailwind'
 
 
 import { useAccount, useConnect, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from "wagmi"
@@ -99,7 +100,13 @@ const Login = () => {
   if (session) {
     return (
       <div className="flex flex-col">
-        <Button onClick={() => signOut()}>Sign Out</Button>
+        <div className="flex flex-row gap-2.5">
+          <Link href="/me" className="flex items-center gap-2">
+            <Avatar src={'https://effigy.im/a/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045.png'} size="sm" />
+            <Typography variant="h6">{session.user.name}</Typography>
+          </Link>
+          <Button onClick={() => signOut()}>Sign Out</Button>
+        </div>
         {/* <Button onClick={() => setOpenDia(true)}>open</Button> */}
         <Dialog open={openDia} handler={() => setOpenDia(!openDia)} dismiss={{ enabled: false }}>
           <DialogHeader>Last Step.</DialogHeader>
