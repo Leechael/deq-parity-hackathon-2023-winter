@@ -56,7 +56,7 @@ async function main() {
   const tokens = formatEther(balance)
   console.log('balance:', tokens)
 
-  const artifact = JSON.parse(fs.readFileSync('./out/QuestionDeposit.sol/QuestionDeposit.json', 'utf8'))
+  const artifact = JSON.parse(fs.readFileSync('./out/QuestionNFT.sol/QuestionNFT.json', 'utf8'))
   const erc20_artifact = JSON.parse(fs.readFileSync('./out/IERC20.sol/IERC20.json', 'utf8'))
 
   // deploy contract
@@ -79,9 +79,8 @@ async function main() {
   //   nonce,
   // })
 
-
   const tokenAddress = '0x0000000000000000000100000000000000000003'
-  const contractAddress = '0x8de7ecaaede7811725f7b9cce8c1f324a9100063'
+  const contractAddress = '0xC6C850C3455076da5726201a21593D537Ed58189'
   console.log('contractAddress:', contractAddress)
 
   // Step 1:
@@ -96,11 +95,11 @@ async function main() {
   console.info(hash1)
 
   // Step 2:
-  // askQuestion
+  // createReward
   const hash2 = await walletClient.writeContract({
     address: contractAddress,
     abi: artifact.abi,
-    functionName: 'askQuestion',
+    functionName: 'createReward',
     // questionId is 1
     // deposit 1 LDOT
     args: [1, parseUnits('1', 10)]
@@ -109,11 +108,11 @@ async function main() {
   console.info(hash2)
 
   // Step 3:
-  // answerQuestion
+  // grantReward
   const hash3 = await walletClient.writeContract({
     address: contractAddress,
     abi: artifact.abi,
-    functionName: 'answerQuestion',
+    functionName: 'grantReward',
     // questionId is 1
     // answerer is myself
     args: [1, account.address]

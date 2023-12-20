@@ -40,9 +40,9 @@ const erc20_abis = [
   'function approve(address spender, uint256 value) external returns (bool)'
 ]
 
-const quest_deposit_abis = [
-  'function askQuestion(uint256 questionId, uint256 amount) public',
-  'function answerQuestion(uint256 questionId, address answerer) public',
+const question_nft_abis = [
+  'function createReward(uint256 questionId, uint256 amount) public',
+  'function grantReward(uint256 questionId, address answerer) public',
 ]
 
 export function QuestionCreateForm() {
@@ -113,7 +113,7 @@ export function QuestionCreateForm() {
 
       const ldot = new Decimal(dot).div(Decimal.div((rate as bigint).toString(), parseUnits('1', 18).toString())).toString()
 
-      const contractAddress = '0x8de7ecaaede7811725f7b9cce8c1f324a9100063'
+      const contractAddress = '0xC6C850C3455076da5726201a21593D537Ed58189'
       console.log('contractAddress:', contractAddress)
 
       // approve to transfer LDOT
@@ -133,13 +133,13 @@ export function QuestionCreateForm() {
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash2}`)
       setHash2(hash2)
 
-      // askQuestion
+      // createReward
       setActiveStep(2)
       const hash3 = await walletClient.writeContract({
         chain: mandala,
         address: contractAddress,
-        abi: parseAbi(quest_deposit_abis),
-        functionName: 'askQuestion',
+        abi: parseAbi(question_nft_abis),
+        functionName: 'createReward',
         args: [questionId, parseUnits(ldot, 10)]
       })
       console.info(hash3)
