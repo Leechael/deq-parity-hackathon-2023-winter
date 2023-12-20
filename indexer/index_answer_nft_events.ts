@@ -141,6 +141,7 @@ if (holders.length > 0) {
     const user_id = address_to_id[address]
     if (!user_id) {
       console.log('skip with not matching user_id found: ', address)
+      continue
     }
     await sql`
       INSERT INTO holders (token_id, shares, user_id) VALUES (${tokenId}, ${amount}, ${user_id})

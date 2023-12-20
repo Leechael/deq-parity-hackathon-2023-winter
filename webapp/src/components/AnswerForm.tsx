@@ -42,7 +42,7 @@ const quest_deposit_abis = [
 
 export function AnswerForm({ questionId }: { questionId: number }) {
   const queryClient = useQueryClient()
-  const { mutate, isLoading } = trpcQuery.answers.create.useMutation({
+  const { isLoading, mutateAsync } = trpcQuery.answers.create.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries()
     }
@@ -64,7 +64,7 @@ export function AnswerForm({ questionId }: { questionId: number }) {
 
   const { data: nextId } = useContractRead({
     address: ANSWER_CONTRACT_ADDRESS,
-    abi: parseAbi(quest_deposit_abis),
+    abi: parseAbi(abis),
     functionName: 'nextId',
   })
 
@@ -75,12 +75,19 @@ export function AnswerForm({ questionId }: { questionId: number }) {
     args: [address!, BigInt(questionId), ''],
     enabled: !!address,
   })
-  const { isLoading: isSubmitting, write, } = useContractWrite(config)
+  const { isLoading: isSubmitting, writeAsync, } = useContractWrite(config)
 
   const handleSubmit= async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    mutate({ questionId, tokenId: nextId as number, body: R.pathOr('', ['target', 'body', 'value'], e) })
-    e.currentTarget.reset()
+    if (!nextId) {
+      console.log('Error: nextId should not empty.')
+      return
+    }
+    const tokenId = Number(nextId)
+    const hash = await writeAsync?.()
+    console.log('block hash', hash)
+    await mutateAsync({ questionId, tokenId, body: R.pathOr('', ['target', 'body', 'value'], e) })
+    e.currentTarget?.reset()
   }
 
   return (
