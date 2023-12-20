@@ -306,6 +306,7 @@ export const appRouter = router({
   }),
   users: router({
     info: getUserInfo,
+    setHandleName: setUserHandleName,
     // TODO checker
   }),
 })
