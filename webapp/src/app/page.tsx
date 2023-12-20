@@ -28,33 +28,26 @@ export default async function Home() {
   return (
     <RehydrateHandler data={trpc.dehydrate()}>
       <main className="container mx-auto sm:px-6 lg:px-8 min-h-screen flex flex-col gap-8 items-center">
-        <div className="flex flex-col w-[700px]">
-          <AskButton />
+        <AskButton />
+        <div className="flex flex-col">
           <Tabs value="Hot" className="pt-6 mt-6">
-            <Card className="flex flex-col items-center">
-              <CardHeader color="blue-gray" className="relative w-60">
-                <TabsHeader >
-                  <Tab key="Hot" value="Hot">
-                    Hot
-                  </Tab>
-                  <Tab key="Unanswer" value="Unanswer">
-                    Unanswer
-                  </Tab>
-                </TabsHeader>
-              </CardHeader>
-              <CardBody>
+            <TabsHeader >
+              <Tab key="Hot" value="Hot">
+                Hot
+              </Tab>
+              <Tab key="Unanswer" value="Unanswer">
+                Unanswer
+              </Tab>
+            </TabsHeader>
 
-                <TabsBody>
-                  <TabPanel key="Hot" value="Hot">
-                    <QuestionList type="hot" />
-                  </TabPanel>
-                  <TabPanel key="Unanswer" value="Unanswer">
-                    <QuestionList type="unanswer" />
-                  </TabPanel>
-
-                </TabsBody>
-              </CardBody>
-            </Card>
+            <TabsBody>
+              <TabPanel key="Hot" value="Hot">
+                <QuestionList type="hot" />
+              </TabPanel>
+              <TabPanel key="Unanswer" value="Unanswer">
+                <QuestionList type="unanswer" />
+              </TabPanel>
+            </TabsBody>
           </Tabs >
         </div>
       </main>

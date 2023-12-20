@@ -21,6 +21,17 @@ const registeredUserSchema = z.object({
 
 type RegisteredUser = z.infer<typeof registeredUserSchema>
 
+const AnswerSchema = z.object({
+  id: z.number(),
+  body: z.string(),
+  picked: z.boolean(),
+  values: z.bigint(),
+  shares: z.bigint(),
+  pricePerShare: z.bigint(),
+  createdAt: z.date(),
+  user: registeredUserSchema,
+})
+
 const QuestionSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -28,24 +39,7 @@ const QuestionSchema = z.object({
   totalDeposit: z.bigint(),
   createdAt: z.date(),
   user: registeredUserSchema,
-  answers: z.array(z.object({
-    id: z.number(),
-    body: z.string(),
-    user: z.object({
-      id: z.number(),
-      name: z.string().nullable(),
-      handle: z.string().nullable(),
-      // avatar: z.string(),
-    })
-  })),
-})
-
-const AnswerSchema = z.object({
-  id: z.number(),
-  body: z.string(),
-  picked: z.boolean(),
-  createdAt: z.date(),
-  user: registeredUserSchema,
+  answers: z.array(AnswerSchema.omit({ picked: true })),
 })
 
 
@@ -92,13 +86,17 @@ const listLatestQuestions = publicProcedure
       take: limit,
       include: {
         user: true,
-        answers: { include: { user: true } },
+        answers: { include: { user: true }, take: 1, orderBy: { values: 'desc' } },
       },
     })
     return {
       items: items.map((question) => ({
         ...question,
         user: transformRegisteredUser(question.user),
+        answers: question.answers.map((answer) => ({
+          ...answer,
+          user: transformRegisteredUser(answer.user),
+        })),
       }))
     }
   })
@@ -177,6 +175,10 @@ const getUserCreatedQuestions = publicProcedure
       items: items.map((question) => ({
         ...question,
         user: transformRegisteredUser(question.user),
+        answers: question.answers.map((answer) => ({
+          ...answer,
+          user: transformRegisteredUser(answer.user),
+        })),
       }))
     }
   })
@@ -213,6 +215,10 @@ const getUserAnsweredQuestions = publicProcedure
       items: items.map((question) => ({
         ...question,
         user: transformRegisteredUser(question.user),
+        answers: question.answers.map((answer) => ({
+          ...answer,
+          user: transformRegisteredUser(answer.user),
+        })),
       }))
     }
   })
