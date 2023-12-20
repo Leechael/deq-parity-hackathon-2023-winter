@@ -6,7 +6,7 @@ import { createPublicClient, http } from 'viem'
 import { polygonMumbai } from 'viem/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { InjectedConnector } from 'wagmi/connectors/injected'
-
+import { atom, useAtom, useSetAtom } from 'jotai'
 
 import { TrpcContextProvider } from '@/server/trpcProvider'
 import { mandala } from '@/utils/chains'
@@ -14,9 +14,9 @@ import { mandala } from '@/utils/chains'
 import { Dialog, ThemeProvider } from '../components/material-tailwind'
 import SessionProvider from "@/components/SessionProvider"
 import Login from "../components/Login"
-import { BuyConfirmDialog, SellConfirmDialog } from '@/components/AnswerView'
-import { atom, useAtom, useSetAtom } from 'jotai'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from '@/components/atoms'
+import { BuyShareDialog } from '@/components/BuyShareDialog'
+import { SellShareDialog } from '@/components/SellShareDialog'
 
 // const config = createConfig({
 //   autoConnect: true,
@@ -56,10 +56,10 @@ export default function RootLayout({
                 </nav>
                 {children}
                 <Dialog open={!!buyAnswerId} handler={() => setBuyAnswerId(null)}>
-                  {buyAnswerId ? <BuyConfirmDialog id={buyAnswerId} /> : <></>}
+                  {buyAnswerId ? <BuyShareDialog id={buyAnswerId} /> : <></>}
                 </Dialog>
                 <Dialog open={!!sellAnswerId} handler={() => setSellAnswerId(null)}>
-                  {sellAnswerId ? <SellConfirmDialog id={sellAnswerId} /> : <></>}
+                  {sellAnswerId ? <SellShareDialog id={sellAnswerId} /> : <></>}
                 </Dialog>
               </ThemeProvider>
             </SessionProvider>
