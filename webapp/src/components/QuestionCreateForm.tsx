@@ -133,6 +133,7 @@ export function QuestionCreateForm() {
     mutate({
       title: R.pathOr('', ['target', 'title', 'value'], e),
       body: R.pathOr('', ['target', 'body', 'value'], e),
+      amount: BigInt(dot) * BigInt(1e18),
     })
   }
 

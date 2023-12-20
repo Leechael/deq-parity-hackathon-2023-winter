@@ -70,14 +70,16 @@ const createQuestion = protectedProcedure
   .input(z.object({
     title: z.string(),
     body: z.string(),
+    amount: z.bigint(),
   }))
   .output(QuestionSchema.omit({ answers: true }))
-  .mutation(async ({ input: { title, body }, ctx: { currentUser } }) => {
+  .mutation(async ({ input: { title, body, amount }, ctx: { currentUser } }) => {
     const question = await prisma.question.create({
       data: {
         title,
         body,
         userId: currentUser.id,
+        totalDeposit: amount,
       },
       include: {
         user: true,
