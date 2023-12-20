@@ -20,11 +20,14 @@ export const metadata = {
 
 export default async function Home() {
   const trpc = await useTrpcPreload()
-  await trpc.questions.lastest.prefetch({})
+  // await Promise.all([
+  //   trpc.questions.lastest.prefetch({ type: 'hot' }),
+  //   trpc.questions.lastest.prefetch({ type: 'unanswer' }),
+  // ])
 
   return (
     <RehydrateHandler data={trpc.dehydrate()}>
-      <main className="flex flex-1  flex-col items-center justify-between p-24">
+      <main className="container mx-auto sm:px-6 lg:px-8 min-h-screen flex flex-col gap-8">
         <div className="flex flex-col w-[700px]">
           <AskButton />
           <Tabs value="Hot" className="pt-6 mt-6">

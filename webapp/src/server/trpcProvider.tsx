@@ -14,7 +14,7 @@ export const trpcQuery = createTRPCReact<AppRouter>()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30_000, // 30 seconds
+      staleTime: 60_000, // 30 seconds
     },
   },
 })

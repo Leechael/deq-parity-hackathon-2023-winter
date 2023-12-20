@@ -2,8 +2,10 @@ import { QuestionCreateForm } from '@/components/QuestionCreateForm'
 
 export default async function QuestionCreatePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 w-full">
-      <QuestionCreateForm />
+    <main className="container mx-auto sm:px-6 lg:px-8 min-h-screen flex flex-col gap-8">
+      <div className="mx-auto">
+        <QuestionCreateForm />
+      </div>
     </main>
   )
 }
