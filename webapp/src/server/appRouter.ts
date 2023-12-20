@@ -1,6 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
 import { createServerSideHelpers } from '@trpc/react-query/server'
+import { Prisma } from '@prisma/client'
+
 import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
 import prisma from './db'
@@ -9,16 +11,23 @@ import prisma from './db'
 // Output Schemas
 //
 
+const registeredUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  handle: z.string(),
+  avatar: z.string(),
+  address: z.string(),
+})
+
+type RegisteredUser = z.infer<typeof registeredUserSchema>
+
 const QuestionSchema = z.object({
   id: z.number(),
   title: z.string(),
   body: z.string(),
+  totalDeposit: z.bigint(),
   createdAt: z.date(),
-  user: z.object({
-    id: z.number(),
-    name: z.string().nullable(),
-    handle: z.string().nullable(),
-  }),
+  user: registeredUserSchema,
   answers: z.array(z.object({
     id: z.number(),
     body: z.string(),
@@ -34,13 +43,27 @@ const QuestionSchema = z.object({
 const AnswerSchema = z.object({
   id: z.number(),
   body: z.string(),
+  picked: z.boolean(),
   createdAt: z.date(),
-  user: z.object({
-    id: z.number(),
-    name: z.string().nullable(),
-    handle: z.string().nullable(),
-  }),
+  user: registeredUserSchema,
 })
+
+
+function transformRegisteredUser({ address, ...user }: Prisma.UserGetPayload<{}>): RegisteredUser {
+  if (!address || !user.handle) {
+    throw new Error('transformRegisteredUser failed: nullish user.address')
+  }
+  const name = user.name || + address.slice(0, 6) + '...' + address.slice(-4)
+  const avatar = user.image || `https://effigy.im/a/${address}.png`
+  return {
+    id: user.id,
+    name,
+    handle: user.handle,
+    avatar,
+    address,
+  }
+}
+
 
 //
 // Routes
@@ -72,7 +95,12 @@ const listLatestQuestions = publicProcedure
         answers: { include: { user: true } },
       },
     })
-    return { items }
+    return {
+      items: items.map((question) => ({
+        ...question,
+        user: transformRegisteredUser(question.user),
+      }))
+    }
   })
 
 const createQuestion = protectedProcedure
@@ -94,26 +122,31 @@ const createQuestion = protectedProcedure
         user: true,
       }
     })
-    return question
+    return {
+      ...question,
+      user: transformRegisteredUser(question.user),
+    }
   })
 
 const getQuestionById = publicProcedure
   .input(z.object({
     id: z.number(),
   }))
-  .output(QuestionSchema)
+  .output(QuestionSchema.omit({ answers: true }))
   .query(async ({ input: { id } }) => {
     const question = await prisma.question.findUnique({
       where: { id },
       include: {
         user: true,
-        answers: { include: { user: true }, take: 10, orderBy: { createdAt: 'desc' } },
       }
     })
     if (!question) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
     }
-    return question
+    return {
+      ...question,
+      user: transformRegisteredUser(question.user),
+    }
   })
 
 const getUserCreatedQuestions = publicProcedure
@@ -140,7 +173,12 @@ const getUserCreatedQuestions = publicProcedure
         answers: { include: { user: true }, take: 10, orderBy: { createdAt: 'desc' } },
       },
     })
-    return { items }
+    return {
+      items: items.map((question) => ({
+        ...question,
+        user: transformRegisteredUser(question.user),
+      }))
+    }
   })
 
 const getUserAnsweredQuestions = publicProcedure
@@ -171,7 +209,12 @@ const getUserAnsweredQuestions = publicProcedure
         answers: { where: { userId }, include: { user: true } },
       },
     })
-    return { items }
+    return {
+      items: items.map((question) => ({
+        ...question,
+        user: transformRegisteredUser(question.user),
+      }))
+    }
   })
 
 const createAnswer = protectedProcedure
@@ -205,9 +248,30 @@ const getAnswer = publicProcedure
       include: {
         user: true,
         question: true,
-      }
+        _count: {
+          select: { holders: true }
+        },
+      },
     })
-    return answer
+    if (!answer) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Answer not found' })
+    }
+    const [sharesCounter, valuesCounter] = await Promise.all([
+      prisma.$queryRaw<{shares: bigint}[]>(Prisma.sql`
+        SELECT SUM(shares) as shares FROM public.holders WHERE token_id = ${answer.tokenId}
+      `),
+      prisma.$queryRaw<{type: string, values: bigint}[]>(Prisma.sql`
+        SELECT type, SUM(tokens) as values FROM public.trade_logs WHERE token_id = ${answer.tokenId} GROUP BY type
+      `),
+    ])
+    const bought = valuesCounter.find((counter) => counter.type === 'BOUGHT')
+    const sold = valuesCounter.find((counter) => counter.type === 'SOLD')
+    return {
+      ...answer,
+      user: transformRegisteredUser(answer.user),
+      shares: sharesCounter[0].shares,
+      values: bought ? bought?.values - (sold?.values || BigInt(0)) : BigInt(0),
+    }
   })
 
 const getAnswersByQuestionId = publicProcedure
@@ -233,7 +297,13 @@ const getAnswersByQuestionId = publicProcedure
         user: true,
       },
     })
-    return { items }
+    return {
+      items: items.map((answer, idx) => ({
+        ...answer,
+        user: transformRegisteredUser(answer.user),
+        picked: idx === 0,
+      }))
+    }
   })
 
 const setUserHandleName = protectedProcedure
@@ -296,7 +366,12 @@ const getAnswerTradeHistory = publicProcedure
       skip: (page - 1) * limit,
       take: limit,
     })
-    return { items }
+    return {
+      items: items.map((log) => ({
+        ...log,
+        user: log.user ? transformRegisteredUser(log.user) : null,
+      }))
+    }
   })
 
 const getAnswerHolders = publicProcedure
@@ -304,6 +379,13 @@ const getAnswerHolders = publicProcedure
     tokenId: z.number(),
     page: z.number().default(1),
     limit: z.number().default(10),
+  }))
+  .output(z.object({
+    items: z.array(z.object({
+      id: z.number(),
+      user: registeredUserSchema,
+      shares: z.bigint(),
+    }))
   }))
   .query(async ({ input: { tokenId, page, limit } }) => {
     const items = await prisma.holder.findMany({
@@ -319,7 +401,12 @@ const getAnswerHolders = publicProcedure
       skip: (page - 1) * limit,
       take: limit,
     })
-    return { items }
+    return {
+      items: items.map((holder) => ({
+        ...holder,
+        user: transformRegisteredUser(holder.user),
+      }))
+    }
   })
 
 //

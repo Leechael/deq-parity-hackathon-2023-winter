@@ -84,7 +84,6 @@ export function AnswerForm({ questionId }: { questionId: number }) {
               <Textarea
                 name="body"
                 size="lg"
-                label="Details"
               />
               <div className="flex justify-end mt-4">
                 <Button loading={isLoading || isSubmitting} type="submit">Submit</Button>

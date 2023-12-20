@@ -102,6 +102,7 @@ model Answer {
   user     User       @relation(fields: [userId], references: [id])
   question Question   @relation(fields: [questionId], references: [id])
   trades   TradeLog[]
+  holders  Holder[]
 
   @@map("answers")
 }
@@ -113,7 +114,8 @@ model Holder {
   shares    BigInt
   createdAt DateTime @default(now()) @map("created_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  answer  Answer  @relation(fields: [tokenId], references: [tokenId])
 
   @@map("holders")
   @@unique([userId, tokenId])

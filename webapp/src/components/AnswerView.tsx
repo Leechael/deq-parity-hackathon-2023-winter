@@ -1,6 +1,5 @@
 'use client';
 
-import { trpcQuery } from '@/server/trpcProvider'
 import { useSetAtom } from 'jotai'
 import {
   Avatar,
@@ -16,38 +15,73 @@ import {
   Button,
   ButtonGroup,
 } from '@material-tailwind/react'
-import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms';
+import Link from 'next/link'
+import { formatEther, parseAbi } from 'viem'
+import { useContractRead } from 'wagmi'
+
+import { MarkdownView } from '@/components/MarkdownView'
+import { TradeList } from '@/components/TradeList'
+import { HolderList } from '@/components/HolderList'
+import { trpcQuery } from '@/server/trpcProvider'
+import { formatRelativeTime } from '@/utils/datetime'
+import { ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
+import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
 
 
 export function AnswerView({ id }: { id: number }) {
   const { data, isLoading } = trpcQuery.answers.getById.useQuery({ id })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
+
+  const { data: price } = useContractRead({
+    address: ANSWER_CONTRACT_ADDRESS,
+    abi: parseAbi(abis),
+    functionName: 'getBuyPriceWithFee',
+    args: [BigInt(id), BigInt(1e18)],
+  })
+
   return (
-    <Card className='w-full'>
+    <Card className="w-full rounded-3xl px-8 py-6" shadow={false}>
       <CardBody>
         {isLoading ? <Spinner className="mx-auto" /> : null}
         {data ? (
           <div className="flex flex-col gap-4">
-            <Typography variant="h2">{data.question.title}</Typography>
-            <div className="flex flex-row gap-1 items-center">
-              <Avatar
-                src="https://docs.material-tailwind.com/img/face-2.jpg"
-                alt="avatar"
-                className="p-0.5"
-                size="sm"
-              />
+            <header className="border-b border-gray-100 pb-2.5">
+              <Link href={`/questions/view/${data.question.id}`}>
+                <Typography variant="h4">{data.question.title}</Typography>
+              </Link>
+            </header>
+            <div className="flex flex-row gap-2 items-center">
+              <Link href={`/u/${data.user.handle}`}>
+                <Avatar
+                  src={data.user.avatar}
+                  alt="avatar"
+                  className="border border-gray-400 p-0.5"
+                />
+              </Link>
               <div>
-                <Typography color="gray" className="font-medium">@{data.user.handle}</Typography>
+                <Typography className="font-medium">
+                  <Link href={`/u/${data.user.handle}`}>
+                    @{data.user.name}
+                  </Link>
+                </Typography>
+                <Typography className="text-xs text-gray-500">
+                  {formatRelativeTime(data.createdAt)}
+                </Typography>
               </div>
             </div>
-            <Typography className="leading-7">
+            <MarkdownView>
               {data.body}
-            </Typography>
+            </MarkdownView>
           </div>
         ) : null}
-        <div className="mt-4 border-t border-gray pt-2 flex flex-row justify-between">
-          <div />
+        <div className="mt-4 border-t border-gray pt-4 flex flex-row justify-between items-center">
+          <div>
+            <Typography variant="h3">
+              {formatEther(price || BigInt(0))}
+              <span className="font-light text-sm ml-1.5">ACA / Share</span>
+            </Typography>
+          </div>
           <ButtonGroup variant="gradient" color="amber">
             <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
             <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
@@ -59,8 +93,9 @@ export function AnswerView({ id }: { id: number }) {
 }
 
 export function AnswerData({ id }: { id: number }) {
+  const { data } = trpcQuery.answers.getById.useQuery({ id })
   return (
-    <Card className='w-full'>
+    <div className='w-full px-16 pb-8'>
       <Tabs value="trades">
         <TabsHeader>
           <Tab value="trades">Recent Trades</Tab>
@@ -69,16 +104,31 @@ export function AnswerData({ id }: { id: number }) {
         </TabsHeader>
         <TabsBody>
           <TabPanel value="trades">
-            Trades
+            <TradeList tokenId={id} />
           </TabPanel>
           <TabPanel value="holders">
-            Holders
+            <HolderList tokenId={id} />
           </TabPanel>
           <TabPanel value="overview">
-            overview
+            <div className="flex flex-col gap-4">
+              <div>
+                <Typography variant="h6" className="font-normal">Total Value in the Pool</Typography>
+                <Typography variant="h3">
+                  {formatEther(data?.values ?? BigInt(0))}
+                  <span className="font-light text-sm ml-1.5">ACA</span>
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="h6" className="font-normal">Share Supply</Typography>
+                <Typography variant="h3">
+                  {formatEther(data?.shares ?? BigInt(0))}
+                  <span className="font-light text-sm ml-1.5">Shares</span>
+                </Typography>
+              </div>
+            </div>
           </TabPanel>
         </TabsBody>
       </Tabs>
-    </Card>
+    </div>
   )
 }

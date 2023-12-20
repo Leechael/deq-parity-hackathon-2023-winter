@@ -18,7 +18,7 @@ import { SellShareDialog } from '@/components/SellShareDialog'
 
 const { chains, publicClient } = configureChains([mandala], [publicProvider()])
 const config = createConfig({
-  autoConnect: true,
+  // autoConnect: true,
   connectors: [
     new InjectedConnector({ chains })
   ],
@@ -41,7 +41,7 @@ export default function RootLayout({
           <WagmiConfig config={config}>
             <SessionProvider>
               <ThemeProvider>
-                <nav className="container flex flex-row justify-between items-center mx-auto px-8 py-4">
+                <nav className="container flex flex-row justify-between items-center mx-auto px-8 py-4 mb-4">
                   <a href="/"><img src="/logo.png" alt="logo" className="w-20" /></a>
                   <Login />
                 </nav>
