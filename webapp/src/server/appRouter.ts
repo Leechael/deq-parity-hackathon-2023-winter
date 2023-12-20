@@ -31,6 +31,16 @@ const QuestionSchema = z.object({
   })),
 })
 
+const AnswerSchema = z.object({
+  id: z.number(),
+  body: z.string(),
+  createdAt: z.date(),
+  user: z.object({
+    id: z.number(),
+    name: z.string().nullable(),
+    handle: z.string().nullable(),
+  }),
+})
 
 //
 // Routes
@@ -200,6 +210,32 @@ const getAnswer = publicProcedure
     return answer
   })
 
+const getAnswersByQuestionId = publicProcedure
+  .input(z.object({
+    id: z.number(),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  }))
+  .output(z.object({
+    items: z.array(AnswerSchema)
+  }))
+  .query(async ({ input: { id, page, limit } }) => {
+    const items = await prisma.answer.findMany({
+      where: {
+        questionId: id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        user: true,
+      },
+    })
+    return { items }
+  })
+
 const setUserHandleName = protectedProcedure
   .input(z.object({
     handle: z.string(),
@@ -303,6 +339,7 @@ export const appRouter = router({
     getById: getAnswer,
     tradeHistory: getAnswerTradeHistory,
     holders: getAnswerHolders,
+    getByQuestionId: getAnswersByQuestionId,
   }),
   users: router({
     info: getUserInfo,

@@ -41,7 +41,12 @@ const quest_deposit_abis = [
 ]
 
 export function AnswerForm({ questionId }: { questionId: number }) {
-  const { mutate, isLoading } = trpcQuery.answers.create.useMutation()
+  const queryClient = useQueryClient()
+  const { mutate, isLoading } = trpcQuery.answers.create.useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries()
+    }
+  })
 
   const { data: walletClient, isLoading: walletIsLoading } = useWalletClient()
   const { address, isConnected } = useAccount()
@@ -75,10 +80,11 @@ export function AnswerForm({ questionId }: { questionId: number }) {
   const handleSubmit= async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     mutate({ questionId, tokenId: nextId as number, body: R.pathOr('', ['target', 'body', 'value'], e) })
+    e.currentTarget.reset()
   }
 
   return (
-    <div className="w-[700px] m-x-auto">
+    <div className="w-full">
       <Card>
         <CardBody>
           {isLoading && <div>Loading...</div>}
