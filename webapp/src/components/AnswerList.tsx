@@ -17,7 +17,7 @@ import remarkGfm from 'remark-gfm'
 export function AnswerList({ id }: { id: number }) {
   const { data, isLoading } = trpcQuery.answers.getByQuestionId.useQuery({ id })
   return (
-    <div className="flex flex-col align-center gap-8 pb-8">
+    <div className="flex flex-col align-center gap-8">
       {
         isLoading ? (
         <div className="w-full flex items-center justify-center">
