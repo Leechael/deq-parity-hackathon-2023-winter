@@ -381,9 +381,11 @@ const getUserInfo = publicProcedure
     if (!handle && !currentUser?.id) {
       throw new TRPCError({ code: 'BAD_REQUEST' })
     }
-    const user = await prisma.user.findUnique({
-      where: handle ? { handle } : { id: currentUser.id },
-    })
+    let where: Prisma.UserWhereUniqueInput = { handle }
+    if (!handle && currentUser?.id) {
+      where = { id: currentUser.id }
+    }
+    const user = await prisma.user.findUnique({ where })
     if (!user) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
     }
