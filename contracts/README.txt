@@ -16,6 +16,7 @@ Install dependencies:
 
 ```shell
 bun install
+forge install
 ```
 
 Compile contracts:
