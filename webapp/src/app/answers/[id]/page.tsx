@@ -1,4 +1,4 @@
-import { AnswerView, AnswerData, BuyConfirmDialog, SellConfirmDialog } from '@/components/AnswerView'
+import { AnswerView, AnswerData } from '@/components/AnswerView'
 
 interface PageParams {
   id: string

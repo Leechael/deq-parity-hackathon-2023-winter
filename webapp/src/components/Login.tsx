@@ -54,7 +54,7 @@ const Login = () => {
     } else {
       await signIn(sType)
     }
-    router.replace('/')
+    // router.replace('/')
   }
 
   const onCommitHandleName = async () => {
@@ -68,7 +68,8 @@ const Login = () => {
 
   useEffect(() => {
     if (isConnected && !session) {
-      onSignIn('credentials')
+      // fuck
+      // onSignIn('credentials')
     } else if (isConnected && session) {
       if (needSwitchChain) {
         if (switchStatus === 'idle') {
@@ -77,6 +78,7 @@ const Login = () => {
       }
     }
   }, [isConnected, session, needSwitchChain, switchStatus])
+
   useEffect(() => {
     if (session && !(session.user as any)?.handle) {
       setOpenDia(true)

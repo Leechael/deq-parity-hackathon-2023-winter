@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react'
-import { trpcQuery } from '@/server/trpcProvider'
-import { atom, useAtom, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import {
   Avatar,
   Card,
@@ -16,283 +14,64 @@ import {
   TabPanel,
   Button,
   ButtonGroup,
-  Dialog,
-  DialogBody,
-  DialogHeader,
-  DialogFooter,
-  Input,
 } from '@material-tailwind/react'
-import { formatEther, parseAbi, parseEther } from 'viem'
-import { polygonMumbai } from 'viem/chains'
-import { usePublicClient, useAccount, useConnect, useWalletClient, useContractWrite, usePrepareContractWrite, useNetwork, useSwitchNetwork } from 'wagmi'
-import { InjectedConnector } from '@wagmi/connectors/injected'
-import { getBuyPrice, getSellPrice, type EstimatedPrice, ANSWER_CONTRACT_ADDRESS, abis } from '@/features/answers/requests'
-import { mandala } from '@/utils/chains'
-import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms';
+import Link from 'next/link'
+import { formatEther } from 'viem'
 
+import { MarkdownView } from '@/components/MarkdownView'
+import { TradeList } from '@/components/TradeList'
+import { HolderList } from '@/components/HolderList'
+import { trpcQuery } from '@/server/trpcProvider'
+import { formatRelativeTime } from '@/utils/datetime'
+import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
 
-export function BuyConfirmDialog({ id }: { id: number }) {
-  const [isEstimating, setIsEstimating] = useState(false)
-  const [amount, setAmount] = useState(0)
-  const [price, setPrice] = useState<EstimatedPrice | null>(null)
-
-  const [buyAnswerId, setBuyAnswerId] = useAtom(buyAnswerIdAtom)
-  const publicClient = usePublicClient()
-  const { connect } = useConnect({ connector: new InjectedConnector() })
-  const { isConnected } = useAccount()
-
-  const { chain } = useNetwork()
-  // const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
-  // const needSwitchChain = chain?.id !== polygonMumbai.id
-  const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
-  const needSwitchChain = chain?.id !== mandala.id
-
-  const { config } = usePrepareContractWrite({
-    address: ANSWER_CONTRACT_ADDRESS,
-    abi: parseAbi(abis),
-    functionName: 'buy',
-    args: [BigInt(id), BigInt(amount * 10000) * BigInt(1e14)],
-    value: price?.priceWithFee,
-    // value: BigInt(1e17),
-    enabled: !!(amount && amount > 0 && price && price.priceWithFee > 0 && isConnected),
-  })
-  const { isLoading, write, } = useContractWrite({
-    ...config,
-    onSuccess: () => setBuyAnswerId(null),
-  })
-
-  return (
-    <>
-      <DialogHeader>
-        <Typography variant="h5">Buy Shares</Typography>
-      </DialogHeader>
-      <DialogBody>
-        {isEstimating ? (<Spinner />) : (
-          price ? (
-            <Typography className="text-2xl text-red-400 font-medium">
-              {formatEther(price.price)} <small>ACA</small>
-            </Typography>
-          ) : null
-        )}
-        <Typography className="mb-4">
-          Price rises as more shares are bought.
-        </Typography>
-        <div className="relative flex w-full">
-          <Input
-            label="Shares"
-            className="pr-20"
-            containerProps={{
-              className: "min-w-0",
-            }}
-            onChange={e => {
-              const parsed = Number(e.target.value)
-              if (parsed && parsed > 0 && !isNaN(parsed)) {
-                setAmount(parsed)
-                setIsEstimating(true)
-                getBuyPrice(publicClient, BigInt(id), BigInt(parsed * 10000) * BigInt(1e14)).then(price => {
-                  setPrice(price)
-                  setIsEstimating(false)
-                })
-              }
-            }}
-          />
-          <Button
-            size="sm"
-            color="gray"
-            disabled={true}
-            className="!absolute right-1 top-1 rounded"
-          >
-            Shares
-          </Button>
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={() => setBuyAnswerId(null)}
-          className="mr-1"
-        >
-          <span>Cancel</span>
-        </Button>
-        {!isConnected ? (
-          <Button
-            variant="gradient"
-            color="amber"
-            onClick={() => connect()}
-          >
-            <span>Connect</span>
-          </Button>
-        ) : null}
-        {(isConnected && needSwitchChain) ? (
-          <Button
-            variant="gradient"
-            color="amber"
-            onClick={() => {
-              switchNetwork?.()
-            }}
-          >
-            <span>Switch Network</span>
-          </Button>
-        ) : null}
-        <Button
-          variant="gradient"
-          color="amber"
-          loading={isLoading}
-          disabled={isEstimating || !amount || !isConnected}
-          onClick={() => write?.()}
-        >
-          <span>Confirm</span>
-        </Button>
-      </DialogFooter>
-    </>
-  )
-}
-
-export function SellConfirmDialog({ id }: { id: number }) {
-  const [isEstimating, setIsEstimating] = useState(false)
-  const [amount, setAmount] = useState(0)
-  const [price, setPrice] = useState<EstimatedPrice | null>(null)
-
-  const [sellAnswerId, setSellAnswerId] = useAtom(sellAnswerIdAtom)
-  const publicClient = usePublicClient()
-  const { connect } = useConnect({ connector: new InjectedConnector() })
-  const { isConnected } = useAccount()
-
-  const { chain } = useNetwork()
-  const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
-  // const { switchNetwork } = useSwitchNetwork({ chainId: polygonMumbai.id })
-  const needSwitchChain = chain?.id !== polygonMumbai.id
-
-  const { config } = usePrepareContractWrite({
-    address: ANSWER_CONTRACT_ADDRESS,
-    abi: parseAbi(abis),
-    functionName: 'sell',
-    args: [BigInt(id), BigInt(amount * 10000) * BigInt(1e14)],
-    enabled: !!(amount && amount > 0 && isConnected),
-  })
-  const { isLoading, write, } = useContractWrite({
-    ...config,
-    onSuccess: () => setSellAnswerId(null),
-  })
-
-  return (
-    <>
-      <DialogHeader>
-        <Typography variant="h5">Sell Shares</Typography>
-      </DialogHeader>
-      <DialogBody>
-        {isEstimating ? (<Spinner />) : (
-          price ? (
-            <Typography className="text-2xl text-red-400 font-medium">
-              {formatEther(price.price)} <small>ACA</small>
-            </Typography>
-          ) : null
-        )}
-        <Typography className="mb-4">
-          Price rises as more shares are bought.
-        </Typography>
-        <div className="relative flex w-full">
-          <Input
-            label="Shares"
-            className="pr-20"
-            containerProps={{
-              className: "min-w-0",
-            }}
-            onChange={e => {
-              const parsed = Number(e.target.value)
-              if (parsed && parsed > 0 && !isNaN(parsed)) {
-                setAmount(parsed)
-                setIsEstimating(true)
-                getSellPrice(publicClient, BigInt(id), BigInt(parsed * 10000) * BigInt(1e14)).then(price => {
-                  setPrice(price)
-                  setIsEstimating(false)
-                })
-              }
-            }}
-          />
-          <Button
-            size="sm"
-            color="gray"
-            disabled={true}
-            className="!absolute right-1 top-1 rounded"
-          >
-            Shares
-          </Button>
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={() => setSellAnswerId(null)}
-          className="mr-1"
-        >
-          <span>Cancel</span>
-        </Button>
-        {!isConnected ? (
-          <Button
-            variant="gradient"
-            color="amber"
-            onClick={() => connect()}
-          >
-            <span>Connect</span>
-          </Button>
-        ) : null}
-        {(isConnected && needSwitchChain) ? (
-          <Button
-            variant="gradient"
-            color="amber"
-            onClick={() => {
-              switchNetwork?.()
-            }}
-          >
-            <span>Switch Network</span>
-          </Button>
-        ) : null}
-        <Button
-          variant="gradient"
-          color="amber"
-          loading={isLoading}
-          disabled={isEstimating || !amount || !isConnected}
-          onClick={() => write?.()}
-        >
-          <span>Confirm</span>
-        </Button>
-      </DialogFooter>
-    </>
-  )
-}
 
 export function AnswerView({ id }: { id: number }) {
   const { data, isLoading } = trpcQuery.answers.getById.useQuery({ id })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
   return (
-    <Card className='w-full'>
+    <Card className="w-full rounded-3xl px-8 py-6" shadow={false}>
       <CardBody>
         {isLoading ? <Spinner className="mx-auto" /> : null}
         {data ? (
           <div className="flex flex-col gap-4">
-            <Typography variant="h2">{data.question.title}</Typography>
-            <div className="flex flex-row gap-1 items-center">
-              <Avatar
-                src="https://docs.material-tailwind.com/img/face-2.jpg"
-                alt="avatar"
-                className="p-0.5"
-                size="sm"
-              />
+            <header className="border-b border-gray-100 pb-2.5">
+              <Link href={`/questions/view/${data.question.id}`}>
+                <Typography variant="h4">{data.question.title}</Typography>
+              </Link>
+            </header>
+            <div className="flex flex-row gap-2 items-center">
+              <Link href={`/u/${data.user.handle}`}>
+                <Avatar
+                  src={data.user.avatar}
+                  alt="avatar"
+                  className="border border-gray-400 p-0.5"
+                />
+              </Link>
               <div>
-                <Typography color="gray" className="font-medium">@{data.user.handle}</Typography>
+                <Typography className="font-medium">
+                  <Link href={`/u/${data.user.handle}`}>
+                    @{data.user.name}
+                  </Link>
+                </Typography>
+                <Typography className="text-xs text-gray-500">
+                  {formatRelativeTime(data.createdAt)}
+                </Typography>
               </div>
             </div>
-            <Typography className="leading-7">
+            <MarkdownView>
               {data.body}
-            </Typography>
+            </MarkdownView>
           </div>
         ) : null}
-        <div className="mt-4 border-t border-gray pt-2 flex flex-row justify-between">
-          <div />
+        <div className="mt-4 border-t border-gray pt-4 flex flex-row justify-between items-center">
+          <div>
+            <Typography variant="h3">
+              {formatEther(data?.pricePerShare || BigInt(0))}
+              <span className="font-light text-sm ml-1.5">ACA / Share</span>
+            </Typography>
+          </div>
           <ButtonGroup variant="gradient" color="amber">
             <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
             <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
@@ -304,8 +83,9 @@ export function AnswerView({ id }: { id: number }) {
 }
 
 export function AnswerData({ id }: { id: number }) {
+  const { data } = trpcQuery.answers.getById.useQuery({ id })
   return (
-    <Card className='w-full'>
+    <div className='w-full px-16 pb-8'>
       <Tabs value="trades">
         <TabsHeader>
           <Tab value="trades">Recent Trades</Tab>
@@ -314,16 +94,31 @@ export function AnswerData({ id }: { id: number }) {
         </TabsHeader>
         <TabsBody>
           <TabPanel value="trades">
-            Trades
+            <TradeList tokenId={id} />
           </TabPanel>
           <TabPanel value="holders">
-            Holders
+            <HolderList tokenId={id} />
           </TabPanel>
           <TabPanel value="overview">
-            overview
+            <div className="flex flex-col gap-4">
+              <div>
+                <Typography variant="h6" className="font-normal">Total Value in the Pool</Typography>
+                <Typography variant="h3">
+                  {formatEther(data?.values ?? BigInt(0))}
+                  <span className="font-light text-sm ml-1.5">ACA</span>
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="h6" className="font-normal">Share Supply</Typography>
+                <Typography variant="h3">
+                  {formatEther(data?.shares ?? BigInt(0))}
+                  <span className="font-light text-sm ml-1.5">Shares</span>
+                </Typography>
+              </div>
+            </div>
           </TabPanel>
         </TabsBody>
       </Tabs>
-    </Card>
+    </div>
   )
 }
