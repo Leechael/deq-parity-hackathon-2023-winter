@@ -8,7 +8,7 @@ import {
   Spinner,
   Typography,
 } from '@material-tailwind/react'
-import { formatEther } from 'viem'
+import { formatUnits } from 'viem'
 
 import { MarkdownView } from '@/components/MarkdownView'
 import { trpcQuery } from '@/server/trpcProvider'
@@ -27,7 +27,7 @@ export function QuestionView({ id }: { id: number }) {
                 <Typography variant="h4">{data.title}</Typography>
               </Link>
               <div className="ml-2.5">
-                <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatEther(data.totalDeposit)}</span>
+                <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatUnits(data.totalDeposit, 10)}</span>
                 <span className="text-gray-600 font-extralight text-sm ml-1">DOT</span>
               </div>
             </header>

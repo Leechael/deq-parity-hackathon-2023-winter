@@ -11,7 +11,7 @@ import {
   Button,
 } from '@material-tailwind/react'
 import { useSetAtom } from 'jotai'
-import { formatEther } from 'viem'
+import { formatEther, formatUnits } from 'viem'
 
 import { trpcQuery } from '@/server/trpcProvider'
 import { MarkdownView } from '@/components/MarkdownView'
@@ -104,7 +104,7 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
               </Typography>
             </Link>
             <div className="ml-2.5">
-              <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatEther(question.totalDeposit)}</span>
+              <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatUnits(question.totalDeposit, 10)}</span>
               <span className="text-gray-600 font-extralight text-sm ml-1">DOT</span>
             </div>
           </div>

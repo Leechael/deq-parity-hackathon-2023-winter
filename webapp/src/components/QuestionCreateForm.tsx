@@ -42,7 +42,6 @@ const erc20_abis = [
 
 const question_nft_abis = [
   'function createReward(uint256 questionId, uint256 amount) public',
-  'function grantReward(uint256 questionId, address answerer) public',
 ]
 
 export function QuestionCreateForm() {
@@ -106,6 +105,7 @@ export function QuestionCreateForm() {
       console.info(hash1)
       await publicClient.waitForTransactionReceipt({
         hash: hash1,
+        confirmations: 2,
         timeout: 300_000,
       })
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash1}`)
@@ -128,6 +128,7 @@ export function QuestionCreateForm() {
       console.info(hash2)
       await publicClient.waitForTransactionReceipt({
         hash: hash2,
+        confirmations: 2,
         timeout: 300_000,
       })
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash2}`)
@@ -145,6 +146,7 @@ export function QuestionCreateForm() {
       console.info(hash3)
       await publicClient.waitForTransactionReceipt({
         hash: hash3,
+        confirmations: 2,
         timeout: 300_000,
       })
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash3}`)

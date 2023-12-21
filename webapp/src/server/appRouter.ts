@@ -31,6 +31,7 @@ const AnswerSchema = z.object({
   pricePerShare: z.bigint(),
   createdAt: z.date(),
   user: registeredUserSchema,
+  question_creator_id: z.number(),
 })
 
 const QuestionSchema = z.object({
@@ -40,7 +41,7 @@ const QuestionSchema = z.object({
   totalDeposit: z.bigint(),
   createdAt: z.date(),
   user: registeredUserSchema,
-  answers: z.array(AnswerSchema.omit({ picked: true })),
+  answers: z.array(AnswerSchema.omit({ picked: true, question_creator_id: true })),
 })
 
 
@@ -272,6 +273,7 @@ const getUserAnsweredQuestions = publicProcedure
         answers: question.answers.map((answer) => ({
           ...answer,
           user: transformRegisteredUser(answer.user),
+          question_creator_id: question.userId,
         })),
       }))
     }
@@ -323,7 +325,7 @@ const getAnswersByQuestionId = publicProcedure
   .input(z.object({
     id: z.number(),
     page: z.number().default(1),
-    limit: z.number().default(10),
+    limit: z.number().default(100),
   }))
   .output(z.object({
     items: z.array(AnswerSchema)
@@ -340,15 +342,31 @@ const getAnswersByQuestionId = publicProcedure
       take: limit,
       include: {
         user: true,
+        question: true,
       },
     })
     return {
       items: items.map((answer, idx) => ({
         ...answer,
         user: transformRegisteredUser(answer.user),
-        picked: idx === 0,
+        question_creator_id: answer.question.userId,
       }))
     }
+  })
+
+
+const pickAnswer = protectedProcedure
+  .input(z.object({
+    id: z.number(),
+    picked: z.boolean().default(false),
+  }))
+  .mutation(async ({ input: { id, picked }, ctx: { currentUser } }) => {
+    await prisma.answer.update({
+      where: { id },
+      data: {
+        picked
+      }
+    })
   })
 
 const setUserHandleName = protectedProcedure
@@ -518,6 +536,7 @@ export const appRouter = router({
     tradeHistory: getAnswerTradeHistory,
     holders: getAnswerHolders,
     getByQuestionId: getAnswersByQuestionId,
+    pick: pickAnswer,
   }),
   users: router({
     info: getUserInfo,
