@@ -68,7 +68,7 @@ model Question {
   userId        Int      @map("user_id")
   title         String
   body          String
-  totalDeposit  BigInt   @default(0)
+  totalDeposit  BigInt   @default(0) @map("total_deposit")
   createdAt     DateTime @default(now()) @map("created_at")
 
   user          User     @relation(fields: [userId], references: [id])
