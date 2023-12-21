@@ -32,7 +32,6 @@ const AnswerSchema = z.object({
   createdAt: z.date(),
   user: registeredUserSchema,
   question_creator_id: z.number(),
-  questionId: z.number()
 })
 
 const QuestionSchema = z.object({
@@ -42,7 +41,7 @@ const QuestionSchema = z.object({
   totalDeposit: z.bigint(),
   createdAt: z.date(),
   user: registeredUserSchema,
-  answers: z.array(AnswerSchema.omit({ picked: true })),
+  answers: z.array(AnswerSchema.omit({ picked: true, question_creator_id: true })),
 })
 
 
