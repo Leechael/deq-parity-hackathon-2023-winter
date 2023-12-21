@@ -57,7 +57,7 @@ export function QuestionList({ type }: { type: string }) {
                   <Avatar variant="circular" alt={answer.user.name || ''} src={answer.user.avatar} />
                   <Typography variant="small">@{answer.user.name}</Typography>
                 </Link>
-                <div>
+                <div className="w-full">
                   <MarkdownView>{answer.body}</MarkdownView>
                   <div className="mt-2.5">
                     <Link href={`/u/${answer.user.handle}`}>
