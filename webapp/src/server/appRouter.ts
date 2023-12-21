@@ -378,8 +378,8 @@ const getUserInfo = publicProcedure
     handle: z.string().optional(),
   }))
   .query(async ({ input: { handle }, ctx: { currentUser } }) => {
-    if (!handle || !currentUser) {
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' })
+    if (!handle && !currentUser?.id) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
     }
     const user = await prisma.user.findUnique({
       where: handle ? { handle } : { id: currentUser.id },
