@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
 import { createServerSideHelpers } from '@trpc/react-query/server'
 import { Prisma } from '@prisma/client'
+import * as R from 'ramda'
 
 import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
@@ -67,31 +68,83 @@ const listLatestQuestions = publicProcedure
   .input(z.object({
     page: z.number().default(1),
     limit: z.number().default(10),
-    type: z.string().default('hot'),
+    type: z.enum(['hot', 'unanswer']).nullish().default('hot'),
   }))
   .output(z.object({
     items: z.array(QuestionSchema)
   }))
   .query(async ({ input: { page, limit, type } }) => {
-    const where = {
-      answers: { 
-        [type === 'unanswer' ? 'none' : 'some']: {}
-      }
+    let ids: number[] = []
+    if (type === 'hot' || !type) {
+      const filtered = await prisma.$queryRaw<{
+        question_id: number,
+        price_per_share: bigint,
+        total_deposit: bigint,
+        created_at: Date,
+      }[]>(Prisma.sql`
+        SELECT
+          *
+        FROM ( SELECT DISTINCT
+            questions.id AS question_id,
+            coalesce(max(answers.price_per_share), 0) AS price_per_share,
+            questions.total_deposit,
+            questions.created_at
+          FROM
+            public.questions
+          LEFT JOIN public.answers ON questions.id = answers.question_id
+        GROUP BY
+          questions.id,
+          answers.id
+        HAVING
+          count(answers.id) > 0
+        ORDER BY
+          question_id) AS t
+        ORDER BY
+          t.price_per_share DESC,
+          t.total_deposit DESC,
+          t.created_at DESC
+        LIMIT ${limit}
+        OFFSET ${(page - 1) * limit}
+        ;
+      `)
+      ids = filtered.map((item) => item.question_id)
+    } else if (type === 'unanswer') {
+      const filtered = await prisma.$queryRaw<{
+        question_id: number,
+        total_deposit: bigint,
+      }[]>(Prisma.sql`
+        SELECT DISTINCT
+            questions.id AS question_id,
+            questions.total_deposit
+          FROM
+            public.questions
+          LEFT JOIN public.answers ON questions.id = answers.question_id
+        GROUP BY
+          questions.id
+        HAVING
+          count(answers.id) = 0
+        ORDER BY
+          total_deposit desc
+        LIMIT ${limit}
+        OFFSET ${(page - 1) * limit}
+        ;
+      `)
+      ids = filtered.map((item) => item.question_id)
     }
     const items = await prisma.question.findMany({
-      where,
-      orderBy: {
-        createdAt: 'desc',
+      where: {
+        id: {
+          'in': ids
+        }
       },
-      skip: (page - 1) * limit,
-      take: limit,
       include: {
         user: true,
         answers: { include: { user: true }, take: 1, orderBy: { values: 'desc' } },
       },
     })
+    const sorted = R.sort((i, j) => ids.indexOf(i.id) - ids.indexOf(j.id), items)
     return {
-      items: items.map((question) => ({
+      items: sorted.map((question) => ({
         ...question,
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
@@ -325,7 +378,7 @@ const getUserInfo = publicProcedure
     handle: z.string().optional(),
   }))
   .query(async ({ input: { handle }, ctx: { currentUser } }) => {
-    if (!handle && !currentUser) {
+    if (!handle || !currentUser) {
       throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' })
     }
     const user = await prisma.user.findUnique({

@@ -18,7 +18,7 @@ import { MarkdownView } from '@/components/MarkdownView'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
 import { formatRelativeTime } from '@/utils/datetime';
 
-export function QuestionList({ type }: { type: string }) {
+export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
