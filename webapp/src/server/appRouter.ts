@@ -325,7 +325,7 @@ const getUserInfo = publicProcedure
     handle: z.string().optional(),
   }))
   .query(async ({ input: { handle }, ctx: { currentUser } }) => {
-    if (!handle || !currentUser) {
+    if (!handle && !currentUser) {
       throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' })
     }
     const user = await prisma.user.findUnique({
@@ -401,6 +401,50 @@ const getAnswerHolders = publicProcedure
     }
   })
 
+
+const getUserHoldings = publicProcedure
+  .input(z.object({
+    userId: z.number(),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  }))
+  .output(z.object({
+    items: z.array(z.object({
+      id: z.number(),
+      user: registeredUserSchema,
+      shares: z.bigint(),
+      answer: z.object({
+        id: z.number(),
+        body: z.string()
+      }),
+    }))
+  }))
+  .query(async ({ input: { userId, page, limit } }) => {
+    const items = await prisma.holder.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        shares: 'desc',
+      },
+      include: {
+        user: true,
+        answer: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+    return {
+      items: items.map((holder) => ({
+        ...holder,
+        user: transformRegisteredUser(holder.user),
+        answer: {
+          id: holder.answer.id,
+          body: holder.answer.body,
+        }
+      }))
+    }
+  })
 //
 // Final
 //
@@ -423,6 +467,7 @@ export const appRouter = router({
   users: router({
     info: getUserInfo,
     setHandleName: setUserHandleName,
+    holdings: getUserHoldings
     // TODO checker
   }),
 })
