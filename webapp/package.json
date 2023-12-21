@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
-    "seed-win": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed.ts"
+    "db:deploy": "prisma migrate deploy",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@acala-network/contracts": "^4.5.0",
@@ -53,6 +55,7 @@
     "postcss": "^8",
     "prisma": "^5.7.0",
     "tailwindcss": "^3",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }

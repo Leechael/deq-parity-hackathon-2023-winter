@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
   "devDependencies": {
     "@faker-js/faker": "^8.3.1",
     "@openzeppelin/contracts": "^5.0.1",

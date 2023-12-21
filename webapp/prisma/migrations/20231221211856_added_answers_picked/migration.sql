@@ -1,2 +1,0 @@
-
-ALTER TABLE "answers" ADD COLUMN "picked" BOOLEAN DEFAULT FALSE;
