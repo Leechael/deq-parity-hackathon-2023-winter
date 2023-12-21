@@ -107,6 +107,8 @@ model Answer {
   trades   TradeLog[]
   holders  Holder[]
 
+  picked Boolean @default(false)
+
   @@map("answers")
 }
 
