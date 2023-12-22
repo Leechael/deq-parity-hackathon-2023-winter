@@ -283,6 +283,27 @@ const getUserAnsweredQuestions = publicProcedure
     }
   })
 
+const deleteQuestion = protectedProcedure
+  .input(z.object({
+    questionId: z.number(),
+  }))
+  .mutation(async ({ input: { questionId }, ctx: { currentUser } }) => {
+    const where = { id: questionId }
+    const question = await prisma.question.findUnique({ where })
+    if (!question) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
+    }
+    if (question.userId !== currentUser.id) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
+    }
+    const result = await prisma.question.delete({
+      where: {
+        id: questionId,
+      }
+    })
+    return result
+  })
+
 const createAnswer = protectedProcedure
   .input(z.object({
     tokenId: z.number(),
@@ -556,6 +577,7 @@ export const appRouter = router({
     getById: getQuestionById,
     getUserCreated: getUserCreatedQuestions,
     getUserAnswered: getUserAnsweredQuestions,
+    delete: deleteQuestion,
   }),
   answers: router({
     create: createAnswer,

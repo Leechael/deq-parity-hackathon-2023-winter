@@ -75,6 +75,8 @@ export function QuestionCreateForm() {
     }
   })
 
+  const { mutate: deleteMutate } = trpcQuery.questions.delete.useMutation()
+
   const { data: rate, isLoading: rateIsLoading } = useContractRead({
     address: HOMA,
     abi: Homa.abi,
@@ -161,6 +163,9 @@ export function QuestionCreateForm() {
       setLoading(false)
       setErrorMsg(R.pathOr('Fail to Submit', ['message'], error))
       console.error(error)
+      deleteMutate({
+        questionId,
+      })
     }
   }
 
