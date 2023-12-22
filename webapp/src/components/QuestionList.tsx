@@ -24,7 +24,11 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
   if (isLoading) {
-    return <Spinner />
+    return (
+      <div className="w-full flex items-center justify-center">
+        <Spinner />
+      </div>
+    )
   }
   return (
     <div className="flex flex-col align-center gap-8">
