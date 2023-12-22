@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import * as R from 'ramda'
 import {
@@ -157,7 +157,7 @@ export function QuestionCreateForm() {
     }
   }
 
-  const waitForTransactionReceipt = async (hash: `0x${string}`) => {
+  const waitForTransactionReceipt = useCallback(async (hash: `0x${string}`) => {
     try {
       await publicClient.waitForTransactionReceipt({
         hash,
@@ -166,7 +166,7 @@ export function QuestionCreateForm() {
     } catch (error) {
       console.error(error)
     }
-  }
+  }, [publicClient])
 
   const handleSubmit= async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
