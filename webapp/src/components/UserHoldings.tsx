@@ -45,7 +45,7 @@ export function Holdings({ userId }: { userId: number }) {
         </Card>
         <QuestionCreateForm />
       </div>
-      <div>
+      <div className="mt-10">
         <h2 className="text-2xl font-semibold ml-1">Holdings</h2>
         {isLoading ? (
         <div className="w-full flex items-center justify-center">

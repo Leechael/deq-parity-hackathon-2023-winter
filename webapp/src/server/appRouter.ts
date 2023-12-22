@@ -3,10 +3,16 @@ import { z } from 'zod'
 import { createServerSideHelpers } from '@trpc/react-query/server'
 import { Prisma } from '@prisma/client'
 import * as R from 'ramda'
+import { fetch, ProxyAgent, setGlobalDispatcher } from 'undici'
 
 import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
 import prisma from './db'
+
+if (process.env.http_proxy || process.env.https_proxy) {
+  const proxyAgent = new ProxyAgent((process.env.http_proxy || process.env.https_proxy)!)
+  setGlobalDispatcher(proxyAgent)
+}
 
 //
 // Output Schemas
@@ -566,6 +572,31 @@ const getUserHoldings = publicProcedure
       ))
     }
   })
+
+const getTokenPairs = publicProcedure
+  .input(z.object({
+    token: z.string().default('aca'),
+  }))
+  .query(async ({ input: { token } }) => {
+    if (token !== 'aca' && token !== 'dot') {
+      throw new Error(`Unsupport token: ${token}`)
+    }
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=acala&vs_currencies=dot')
+    const data = await res.json() as { acala: { dot: number } }
+    if (token === 'aca') {
+      return {
+        aca: {
+          dot: data.acala.dot
+        }
+      }
+    }
+    return {
+      dot: {
+        aca: 1 / data.acala.dot
+      }
+    }
+  })
+
 //
 // Final
 //
@@ -593,6 +624,9 @@ export const appRouter = router({
     holdings: getUserHoldings
     // TODO checker
   }),
+  utils: router({
+    tokenPairs: getTokenPairs,
+  })
 })
 
 export type AppRouter = typeof appRouter
