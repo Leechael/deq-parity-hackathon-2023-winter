@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import * as R from 'ramda'
 import {
@@ -105,11 +105,7 @@ export function QuestionCreateForm() {
         args: [parseUnits(dot, 10)]
       })
       console.info(hash1)
-      await publicClient.waitForTransactionReceipt({
-        hash: hash1,
-        confirmations: 2,
-        timeout: 300_000,
-      })
+      await waitForTransactionReceipt(hash1)
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash1}`)
       setHash1(hash1)
 
@@ -128,11 +124,7 @@ export function QuestionCreateForm() {
         args: [contractAddress, parseUnits(ldot, 10)]
       })
       console.info(hash2)
-      await publicClient.waitForTransactionReceipt({
-        hash: hash2,
-        confirmations: 2,
-        timeout: 300_000,
-      })
+      await waitForTransactionReceipt(hash2)
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash2}`)
       setHash2(hash2)
 
@@ -146,11 +138,7 @@ export function QuestionCreateForm() {
         args: [questionId, parseUnits(ldot, 10)]
       })
       console.info(hash3)
-      await publicClient.waitForTransactionReceipt({
-        hash: hash3,
-        confirmations: 2,
-        timeout: 300_000,
-      })
+      await waitForTransactionReceipt(hash3)
       console.info(`https://blockscout.mandala.aca-staging.network/tx/${hash3}`)
       setHash3(hash3)
       setLoading(false)
@@ -168,6 +156,17 @@ export function QuestionCreateForm() {
       })
     }
   }
+
+  const waitForTransactionReceipt = useCallback(async (hash: `0x${string}`) => {
+    try {
+      await publicClient.waitForTransactionReceipt({
+        hash,
+        timeout: 60_000,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }, [publicClient])
 
   const handleSubmit= async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
