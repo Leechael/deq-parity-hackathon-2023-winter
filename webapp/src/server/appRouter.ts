@@ -47,7 +47,14 @@ const QuestionSchema = z.object({
 
 function transformRegisteredUser({ address, ...user }: Prisma.UserGetPayload<{}>): RegisteredUser {
   if (!address || !user.handle) {
-    throw new Error('transformRegisteredUser failed: nullish user.address')
+    // throw new Error('transformRegisteredUser failed: nullish user.address')
+    return {
+      id: user.id,
+      name: user.name ?? '',
+      handle: user.handle ?? '',
+      avatar: user.image ?? '',
+      address: address ?? '',
+    }
   }
   const name = user.name || + address.slice(0, 6) + '...' + address.slice(-4)
   const avatar = user.image || `https://effigy.im/a/${address}.png`
@@ -328,16 +335,25 @@ const getAnswersByQuestionId = publicProcedure
     limit: z.number().default(100),
   }))
   .output(z.object({
-    items: z.array(AnswerSchema)
+    items: z.array(AnswerSchema.merge(z.object({
+      question: z.object({
+        id: z.number(),
+      })
+    })))
   }))
   .query(async ({ input: { id, page, limit } }) => {
     const items = await prisma.answer.findMany({
       where: {
         questionId: id,
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: [
+        {
+          values: 'desc',
+        },
+        {
+          createdAt: 'desc',
+        }
+      ],
       skip: (page - 1) * limit,
       take: limit,
       include: {

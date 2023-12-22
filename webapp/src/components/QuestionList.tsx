@@ -15,16 +15,14 @@ import { formatEther, formatUnits } from 'viem'
 
 import { trpcQuery } from '@/server/trpcProvider'
 import { MarkdownView } from '@/components/MarkdownView'
+import { formatRelativeTime } from '@/utils/datetime'
+import { formatNumber } from '@/utils/number'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
-import { formatRelativeTime } from '@/utils/datetime';
 
 export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
-  const onAddAnswer = () => {
-    console.log('onAddAnswer')
-  }
   if (isLoading) {
     return <Spinner />
   }
@@ -86,25 +84,27 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
         </Card>
       ) : (
         <Card key={question.id} className="w-full rounded-3xl px-8 py-6 bg-[#f9e8e6]" shadow={false}>
-          <div className="flex flex-row gap-4 items-center p-4">
-            <Link href={`/u/${question.user.handle}`} className="flex flex-row items-center gap-2.5">
-              <Avatar
-                src={question.user.avatar}
-                alt="avatar"
-                className="border border-gray-400 p-0.5"
-                size="sm"
-              />
-              <Typography className="hover:underline">
-                @{question.user.name}
-              </Typography>
-            </Link>
-            <Link href={`/questions/view/${question.id}`} className="hover:underline">
-              <Typography variant="h5">
-                <q className="px-1.5">{question.title}</q>
-              </Typography>
-            </Link>
+          <div className="flex flex-row gap-8 items-center justify-between p-4">
+            <div className="flex flex-col gap-1.5">
+              <Link href={`/questions/view/${question.id}`} className="hover:underline">
+                <Typography variant="h5">
+                  {question.title}
+                </Typography>
+              </Link>
+              <Link href={`/u/${question.user.handle}`} className="flex flex-row items-center gap-2.5">
+                <Avatar
+                  src={question.user.avatar}
+                  alt="avatar"
+                  className="border border-gray-400 p-0.5"
+                  size="xs"
+                />
+                <Typography className="hover:underline">
+                  @{question.user.name}
+                </Typography>
+              </Link>
+            </div>
             <div className="ml-2.5">
-              <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatUnits(question.totalDeposit, 10)}</span>
+              <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatNumber(formatUnits(question.totalDeposit, 10))}</span>
               <span className="text-gray-600 font-extralight text-sm ml-1">DOT</span>
             </div>
           </div>

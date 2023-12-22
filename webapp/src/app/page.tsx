@@ -2,17 +2,12 @@ import { useTrpcPreload } from '@/server/appRouter'
 import { RehydrateHandler } from '@/server/trpcProvider'
 import { QuestionList } from '@/components/QuestionList'
 import {
-  Card,
-  CardHeader,
-  CardBody,
-  Button,
   Tab,
   Tabs,
   TabsHeader,
   TabsBody,
   TabPanel,
 } from "@/components/material-tailwind";
-import AskButton from '@/components/AskButton'
 
 export const metadata = {
   title: 'DeQ',
@@ -27,11 +22,10 @@ export default async function Home() {
 
   return (
     <RehydrateHandler data={trpc.dehydrate()}>
-      <main className="container mx-auto sm:px-6 lg:px-8 min-h-screen flex flex-col gap-8 items-center">
-        <AskButton />
+      <main className="container mx-auto sm:px-6 lg:px-8 min-h-screen pb-8">
         <div className="flex flex-col">
           <Tabs value="Hot" className="pt-6 mt-6">
-            <TabsHeader >
+            <TabsHeader>
               <Tab key="Hot" value="Hot">
                 Hot
               </Tab>
