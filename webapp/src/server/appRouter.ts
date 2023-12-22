@@ -34,6 +34,8 @@ const AnswerSchema = z.object({
   question_creator_id: z.number(),
 })
 
+type Answer = z.infer<typeof AnswerSchema>
+
 const QuestionSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -44,17 +46,12 @@ const QuestionSchema = z.object({
   answers: z.array(AnswerSchema.omit({ picked: true, question_creator_id: true })),
 })
 
+type Question = z.infer<typeof QuestionSchema>
+
 
 function transformRegisteredUser({ address, ...user }: Prisma.UserGetPayload<{}>): RegisteredUser {
   if (!address || !user.handle) {
-    // throw new Error('transformRegisteredUser failed: nullish user.address')
-    return {
-      id: user.id,
-      name: user.name ?? '',
-      handle: user.handle ?? '',
-      avatar: user.image ?? '',
-      address: address ?? '',
-    }
+    throw new Error('transformRegisteredUser failed: nullish user.address')
   }
   const name = user.name || + address.slice(0, 6) + '...' + address.slice(-4)
   const avatar = user.image || `https://effigy.im/a/${address}.png`
@@ -498,17 +495,17 @@ const getUserHoldings = publicProcedure
     limit: z.number().default(10),
   }))
   .output(z.object({
+    user: registeredUserSchema,
     items: z.array(z.object({
       id: z.number(),
-      user: registeredUserSchema,
       shares: z.bigint(),
-      answer: z.object({
-        id: z.number(),
-        body: z.string()
-      }),
+      answer: AnswerSchema.merge(z.object({
+        question: QuestionSchema.omit({ answers: true }),
+      })).omit({ question_creator_id: true })
     }))
   }))
   .query(async ({ input: { userId, page, limit } }) => {
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } })
     const items = await prisma.holder.findMany({
       where: {
         userId,
@@ -518,20 +515,34 @@ const getUserHoldings = publicProcedure
       },
       include: {
         user: true,
-        answer: true,
+        answer: {
+          include: {
+            user: true,
+            question: {
+              include: {
+                user: true,
+              }
+            },
+          }
+        },
       },
       skip: (page - 1) * limit,
       take: limit,
     })
     return {
+      user: transformRegisteredUser(user),
       items: items.map((holder) => ({
         ...holder,
-        user: transformRegisteredUser(holder.user),
         answer: {
-          id: holder.answer.id,
-          body: holder.answer.body,
-        }
-      }))
+          ...holder.answer,
+          user: transformRegisteredUser(holder.answer.user),
+          question: {
+            ...holder.answer.question,
+            user: transformRegisteredUser(holder.answer.question.user),
+          },
+        },
+      }
+      ))
     }
   })
 //
