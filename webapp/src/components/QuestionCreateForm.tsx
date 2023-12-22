@@ -185,7 +185,7 @@ export function QuestionCreateForm({
       <Alert className="mb-4" color="green" open={open} onClose={() => setOpen(false)}>
         Created successfully, will jump to the question after 10s.
       </Alert>
-      <Card>
+      <Card shadow={false}>
         <CardBody>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">

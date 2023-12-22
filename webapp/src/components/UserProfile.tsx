@@ -8,7 +8,7 @@ import { trpcQuery } from '@/server/trpcProvider'
 export function UserProfile({ handle }: { handle: string }) {
   const { data, isLoading } = trpcQuery.users.info.useQuery({ handle })
   return (
-    <Card className="grow">
+    <Card className="grow" shadow={false}>
       <CardBody>
         {data?.user ? (
           <div className="flex flex-row gap-2 items-center">

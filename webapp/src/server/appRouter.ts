@@ -26,7 +26,7 @@ const registeredUserSchema = z.object({
   address: z.string(),
 })
 
-type RegisteredUser = z.infer<typeof registeredUserSchema>
+export type RegisteredUser = z.infer<typeof registeredUserSchema>
 
 const AnswerSchema = z.object({
   id: z.number(),
@@ -40,7 +40,7 @@ const AnswerSchema = z.object({
   question_creator_id: z.number(),
 })
 
-type Answer = z.infer<typeof AnswerSchema>
+export type Answer = z.infer<typeof AnswerSchema>
 
 const QuestionSchema = z.object({
   id: z.number(),
@@ -52,7 +52,7 @@ const QuestionSchema = z.object({
   answers: z.array(AnswerSchema.omit({ picked: true, question_creator_id: true })),
 })
 
-type Question = z.infer<typeof QuestionSchema>
+export type Question = z.infer<typeof QuestionSchema>
 
 
 function transformRegisteredUser({ address, ...user }: Prisma.UserGetPayload<{}>): RegisteredUser {
@@ -517,15 +517,14 @@ const getAnswerHolders = publicProcedure
     }
   })
 
-
 const getUserHoldings = publicProcedure
   .input(z.object({
-    userId: z.number(),
+    userId: z.number().optional(),
+    handle: z.string().optional(),
     page: z.number().default(1),
     limit: z.number().default(10),
   }))
   .output(z.object({
-    user: registeredUserSchema,
     items: z.array(z.object({
       id: z.number(),
       shares: z.bigint(),
@@ -534,11 +533,18 @@ const getUserHoldings = publicProcedure
       })).omit({ question_creator_id: true })
     }))
   }))
-  .query(async ({ input: { userId, page, limit } }) => {
-    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } })
+  .query(async ({ input: { userId, handle, page, limit } }) => {
+    if (!userId && !handle) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
+    }
     const items = await prisma.holder.findMany({
       where: {
-        userId,
+        user: {
+          OR: [
+            { id: userId },
+            { handle: handle },
+          ]
+        },
       },
       orderBy: {
         shares: 'desc',
@@ -560,7 +566,6 @@ const getUserHoldings = publicProcedure
       take: limit,
     })
     return {
-      user: transformRegisteredUser(user),
       items: items.map((holder) => ({
         ...holder,
         answer: {
@@ -573,6 +578,122 @@ const getUserHoldings = publicProcedure
         },
       }
       ))
+    }
+  })
+
+const getUserRewards = publicProcedure
+  .input(z.object({
+    userId: z.number().optional(),
+    handle: z.string().optional(),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  }))
+  .output(z.object({
+    items: z.array(QuestionSchema)
+  }))
+  .query(async ({ input: { userId, handle, page, limit } }) => {
+    if (!userId && !handle) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
+    }
+    const items = await prisma.answer.findMany({
+      where: {
+        user: {
+          OR: [
+            { id: userId },
+            { handle: handle },
+          ],
+        },
+        picked: true,
+      },
+      orderBy: [
+        {
+          question: {
+            totalDeposit: 'desc',
+          },
+        },
+        {
+          shares: 'desc',
+        },
+      ],
+      include: {
+        user: true,
+        question: {
+          include: {
+            user: true,
+          }
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+    return {
+      items: items.map(({ question, ...answer }) => ({
+        ...question,
+        user: transformRegisteredUser(question.user),
+        answers: [
+          {
+            ...answer,
+            user: transformRegisteredUser(answer.user),
+          }
+        ]
+      }))
+    }
+  })
+
+const getUserAnswers = publicProcedure
+  .input(z.object({
+    userId: z.number().optional(),
+    handle: z.string().optional(),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  }))
+  .output(z.object({
+    items: z.array(QuestionSchema)
+  }))
+  .query(async ({ input: { userId, handle, page, limit } }) => {
+    if (!userId && !handle) {
+      throw new TRPCError({ code: 'BAD_REQUEST' })
+    }
+    const items = await prisma.answer.findMany({
+      where: {
+        user: {
+          OR: [
+            { id: userId },
+            { handle: handle },
+          ],
+        },
+        picked: false,
+      },
+      orderBy: [
+        {
+          shares: 'desc',
+        },
+        {
+          createdAt: 'desc',
+        },
+      ],
+      include: {
+        user: true,
+        question: {
+          include: {
+            user: true,
+          }
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+    return {
+      items: items.map(({ question, ...answer }) => ({
+        ...question,
+        user: transformRegisteredUser(question.user),
+        answers: [
+          {
+            ...answer,
+            user: transformRegisteredUser(answer.user),
+          }
+        ]
+      }))
     }
   })
 
@@ -600,6 +721,7 @@ const getTokenPairs = publicProcedure
     }
   })
 
+
 //
 // Final
 //
@@ -625,6 +747,8 @@ export const appRouter = router({
     info: getUserInfo,
     setHandleName: setUserHandleName,
     holdings: getUserHoldings,
+    rewards: getUserRewards,
+    answers: getUserAnswers,
     // TODO checker
   }),
   utils: router({
