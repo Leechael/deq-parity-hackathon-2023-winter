@@ -57,7 +57,7 @@ export function SellShareDialog({ id }: { id: number }) {
         </Typography>
         <div className="relative flex w-full">
           <Input
-            label="Shares"
+            label="Share"
             className="pr-20"
             containerProps={{
               className: "min-w-0",
@@ -82,7 +82,7 @@ export function SellShareDialog({ id }: { id: number }) {
             className="!absolute right-1 top-1 rounded"
             variant="text"
           >
-            Shares
+            Share
           </Button>
         </div>
       </DialogBody>

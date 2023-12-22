@@ -448,7 +448,10 @@ const getUserInfo = publicProcedure
       throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
     }
     const unclaimedStaking = BigInt(0)
-    return { user, unclaimedStaking }
+    return {
+      user: transformRegisteredUser(user),
+      unclaimedStaking
+    }
   })
 
 const getAnswerTradeHistory = publicProcedure
@@ -621,7 +624,7 @@ export const appRouter = router({
   users: router({
     info: getUserInfo,
     setHandleName: setUserHandleName,
-    holdings: getUserHoldings
+    holdings: getUserHoldings,
     // TODO checker
   }),
   utils: router({

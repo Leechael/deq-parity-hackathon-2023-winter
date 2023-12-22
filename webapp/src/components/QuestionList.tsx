@@ -29,22 +29,22 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
   return (
     <div className="flex flex-col align-center gap-8">
       {data && data.items.map(question => question.answers.length > 0 ? (
-        <Card key={question.id} className="w-full rounded-3xl px-8 py-6" shadow={false}>
-          <div className="flex flex-row gap-4 items-center p-4 rounded-3xl bg-gray-900 text-gray-50">
-            <Link href={`/u/${question.user.handle}`} className="flex flex-row items-center gap-2.5">
+        <Card key={question.id} className="w-full rounded-3xl px-6 py-6" shadow={false}>
+          <div className="flex flex-col gap-2.5 px-12 py-4 rounded-3xl bg-gray-900 text-gray-50">
+            <Link href={`/questions/view/${question.id}`}>
+              <Typography variant="h5" className="hover:underline">
+                {question.title}
+              </Typography>
+            </Link>
+            <Link href={`/u/${question.user.handle}`} className="flex flex-row items-center gap-1.5">
               <Avatar
                 src={question.user.avatar}
                 alt="avatar"
                 className="border border-gray-400 p-0.5"
-                size="sm"
+                size="xs"
               />
-              <Typography className="hover:underline">
+              <Typography className="hover:underline text-sm">
                 @{question.user.name}
-              </Typography>
-            </Link>
-            <Link href={`/questions/view/${question.id}`}>
-              <Typography variant="h5" className="hover:underline">
-                <q className="px-1.5">{question.title}</q>
               </Typography>
             </Link>
           </div>
@@ -57,10 +57,10 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
                 </Link>
                 <div className="w-full">
                   <MarkdownView>{answer.body}</MarkdownView>
-                  <div className="mt-2.5">
+                  <div className="mt-4">
                     <Link href={`/u/${answer.user.handle}`}>
                       @{answer.user.name}
-                    </Link> <span className="text-sm text-gray-500">Created at</span> <Link href={`/answers/${answer.id}`}>{formatRelativeTime(answer.createdAt)}</Link>
+                    </Link> <span className="text-sm text-gray-500">created at</span> <Link href={`/answers/${answer.id}`}>{formatRelativeTime(answer.createdAt)}</Link>
                   </div>
                   <div className="flex justify-between items-center mt-2 border-t border-gray-100 pt-2">
                     <div className="flex flex-col">
