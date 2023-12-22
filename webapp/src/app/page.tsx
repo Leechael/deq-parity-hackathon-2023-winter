@@ -30,7 +30,7 @@ export default async function Home() {
                 Hot
               </Tab>
               <Tab key="Unanswer" value="Unanswer">
-                Unanswer
+                Bounty
               </Tab>
             </TabsHeader>
 

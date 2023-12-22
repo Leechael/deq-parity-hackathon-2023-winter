@@ -23,7 +23,7 @@ import { HOMA } from '@acala-network/contracts/utils/Predeploy'
 import { useSession } from "next-auth/react"
 
 import { mandala } from '@/utils/chains'
-import { Holdings } from '@/components/UserHoldings'
+import { UserHoldings } from '@/components/UserHoldings'
 
 export function Profile() {
   const { data: session } = useSession()
@@ -113,9 +113,9 @@ export function Profile() {
         </Card>
       </div>
       {
-        session && session.user ? (
+        session && session.user && session.user.handle ? (
           <div className="mt-10">
-            <Holdings userId={session.user.id} />
+            <UserHoldings handle={session.user.handle} />
           </div>
         ) : null
       }
