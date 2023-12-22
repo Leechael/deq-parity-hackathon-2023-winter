@@ -26,7 +26,7 @@ export default function UserDetailPage({ params: { handle } }: { params: PagePar
         />
       </div>
       <Tabs className="w-full">
-        <TabList className="flex space-x-1 rounded-full bg-green-900/40 bg-clip-padding p-1 border border-solid border-white/30">
+        <TabList className="flex space-x-1 rounded-full bg-green-900/40 bg-clip-padding p-1 border border-solid border-white/30 mb-4">
           <Tab id="rewards">Rewards</Tab>
           <Tab id="answers">Answers</Tab>
           <Tab id="holdings">Holdings</Tab>
