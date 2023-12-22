@@ -8,7 +8,6 @@ on:
 
 jobs:
   webapp:
-    name: Ensure it can build successful
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
