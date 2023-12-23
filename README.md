@@ -17,12 +17,14 @@ The paid consulting advisor is a long-standing business model, but due to its la
 DeQ aims to address these issues by combining a tokenomics model and De-Fi.
 
 DEMO: [https://deq.lol/](https://deq.lol/)
+Question Contract Address: [0xC6C850C3455076da5726201a21593D537Ed58189](https://blockscout.mandala.aca-staging.network/address/0xC6C850C3455076da5726201a21593D537Ed58189)
+Answer Contract Address: [0x3592D7BD047f069e17D708c31aa25d2c652323a2](https://blockscout.mandala.aca-staging.network/address/0x3592D7BD047f069e17D708c31aa25d2c652323a2)
 
 ## Objectives in Hackathon
 
 During this Hackathon, our goal is to create a Proof-of-concept version by implementing the following features:
 
-- Questioners can ask questions by offering rewards, and these rewards will generate profits over time through staking.
+- Questioners can ask questions by offering rewards, and these rewards will generate profits over time through staking, the stacking feature is implemented through the Acala Homa contract.
 - Answerers can receive the reward after their answers are approved by questioners, and they have the option to continue staking.
 - Community members can support answerers they approve of by buying shares. Answerers receive an initial share when submitting their answers, which they can further profit from by selling shares or through transaction fees.
 - Both questions and answers are converted into on-chain assets by NFTs.

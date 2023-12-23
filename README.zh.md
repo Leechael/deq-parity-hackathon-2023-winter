@@ -16,12 +16,14 @@
 DeQ 希望通过引入货币经济模型和结合 De-Fi 的方式来尝试解决上述问题。
 
 DEMO 地址：[https://deq.lol/](https://deq.lol/)
+Question Contract Address: [0xC6C850C3455076da5726201a21593D537Ed58189](https://blockscout.mandala.aca-staging.network/address/0xC6C850C3455076da5726201a21593D537Ed58189)
+Answer Contract Address: [0x3592D7BD047f069e17D708c31aa25d2c652323a2](https://blockscout.mandala.aca-staging.network/address/0x3592D7BD047f069e17D708c31aa25d2c652323a2)
 
 ## 黑客松期间计划完成的事项
 
 在这一次 Hackathon 期间，我们希望通过完成下述功能完成一个 Proof-of-concept 的版本：
 
-- 提问者通过悬赏的方式提问，而悬赏的奖金通过质押的方式，随着时间的推移出现一个产生收益的效果；
+- 提问者通过悬赏的方式提问，而悬赏的奖金通过质押的方式，随着时间的推移出现一个产生收益的效果，质押的功能通过 Acala Homa 合约实现；
 - 答题者可以在回答问题被得到提问者认可后获得悬赏的奖金，然后可以选择是否继续质押；
 - 社区成员可以通过 buy shares 的方式给自己认可的答案的答题者进行支持，而答题者在提交答案时获取到一个初始 shares，可以通过出售 shares 的方式进一步获取收益，也会在不同用户交易 shares 的时候获得分成；
 - 无论问题或是答案，都通过 NFT 的方式进行转为链上资产。
