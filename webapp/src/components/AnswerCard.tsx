@@ -1,13 +1,13 @@
 import type { Answer } from '@/server/appRouter'
 
-import Link from "next/link"
-import { Card, CardBody, Avatar, Typography, ButtonGroup, Button } from "@material-tailwind/react"
-import { formatEther } from "viem"
-import { useSetAtom } from "jotai"
+import Link from 'next/link'
+import { Card, CardBody, Avatar, Typography, ButtonGroup, Button } from '@material-tailwind/react'
+import { formatEther } from 'viem'
+import { useSetAtom } from 'jotai'
 
-import { MarkdownView } from "@/components/MarkdownView"
-import cn from "@/utils/cn"
-import { formatRelativeTime } from "@/utils/datetime"
+import { MarkdownView } from '@/components/MarkdownView'
+import cn from '@/utils/cn'
+import { formatRelativeTime } from '@/utils/datetime'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
 
 export function AnswerCard({ answer }: { answer: Omit<Answer, 'question_creator_id'> }) {
@@ -47,11 +47,13 @@ export function AnswerCard({ answer }: { answer: Omit<Answer, 'question_creator_
         </MarkdownView>
         <div className="flex justify-between items-center mt-2 border-t border-gray-300 pt-2">
           <div className="flex flex-col">
-            <Typography variant="h3">
-              {formatEther(answer.pricePerShare)}
-              <span className="font-light text-sm ml-1.5">ACA / Share</span>
-            </Typography>
-                    </div>
+            <Link href={`/answers/${answer.id}`}>
+              <Typography variant="h3">
+                {formatEther(answer.pricePerShare)}
+                <span className="font-light text-sm ml-1.5">ACA / Share</span>
+              </Typography>
+            </Link>
+          </div>
           <ButtonGroup size="sm" variant="gradient" color="amber">
             <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
             <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>

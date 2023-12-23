@@ -126,11 +126,13 @@ export function AnswerList({ id }: { id: number }) {
             </MarkdownView>
             <div className="flex justify-between items-center mt-2 border-t border-gray-300 pt-2">
               <div className="flex flex-col">
-                <Typography variant="h3">
-                  {formatEther(answer.pricePerShare)}
-                  <span className="font-light text-sm ml-1.5">ACA / Share</span>
-                </Typography>
-                        </div>
+                <Link href={`/answers/${answer.id}`}>
+                  <Typography variant="h3">
+                    {formatEther(answer.pricePerShare)}
+                    <span className="font-light text-sm ml-1.5">ACA / Share</span>
+                  </Typography>
+                </Link>
+              </div>
               <ButtonGroup size="sm" variant="gradient" color="amber">
                 <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
                 <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
