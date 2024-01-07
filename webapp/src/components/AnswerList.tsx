@@ -133,7 +133,7 @@ export function AnswerList({ id }: { id: number }) {
                   </Typography>
                 </Link>
               </div>
-              <ButtonGroup size="sm" variant="gradient" color="amber">
+              <ButtonGroup size="sm" color="yellow">
                 <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
                 <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
               </ButtonGroup>

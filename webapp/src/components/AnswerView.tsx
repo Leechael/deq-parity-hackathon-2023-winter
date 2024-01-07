@@ -18,7 +18,7 @@ import {
 } from '@material-tailwind/react'
 import Link from 'next/link'
 import { formatEther } from 'viem'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import dayjs from 'dayjs'
 
 import { MarkdownView } from '@/components/MarkdownView'
@@ -75,7 +75,7 @@ export function AnswerView({ id }: { id: number }) {
               <span className="font-light text-sm ml-1.5">ACA / Share</span>
             </Typography>
           </div>
-          <ButtonGroup variant="gradient" color="amber">
+          <ButtonGroup color="yellow">
             <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
             <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
           </ButtonGroup>

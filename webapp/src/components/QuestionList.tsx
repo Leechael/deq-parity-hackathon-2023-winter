@@ -61,10 +61,14 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
                 </Link>
                 <div className="w-full">
                   <MarkdownView>{answer.body}</MarkdownView>
-                  <div className="mt-4">
-                    <Link href={`/u/${answer.user.handle}`}>
+                  <div className="mt-6 text-sm">
+                    <Link href={`/u/${answer.user.handle}`} className="text-gray-600 hover:underline">
                       @{answer.user.name}
-                    </Link> <span className="text-sm text-gray-500">created at</span> <Link href={`/answers/${answer.id}`}>{formatRelativeTime(answer.createdAt)}</Link>
+                    </Link>
+                    <span className="text-xs text-gray-500 mx-1">created at</span>
+                    <Link href={`/answers/${answer.id}`} className="text-gray-600 hover:underline">
+                      {formatRelativeTime(answer.createdAt)}
+                    </Link>
                   </div>
                   <div className="flex justify-between items-center mt-2 border-t border-gray-100 pt-2">
                     <div className="flex flex-col">
@@ -75,7 +79,7 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
                         </Typography>
                       </Link>
                     </div>
-                    <ButtonGroup size="sm" variant="gradient" color="amber">
+                    <ButtonGroup size="sm" color="yellow">
                       <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
                       <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
                     </ButtonGroup>
