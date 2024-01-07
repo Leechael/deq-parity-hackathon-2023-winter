@@ -544,12 +544,20 @@ const getAnswerTradeHistory = publicProcedure
     tokenId: z.number(),
     page: z.number().default(1),
     limit: z.number().default(10),
+    days: z.number().optional(),
   }))
-  .query(async ({ input: { tokenId, page, limit } }) => {
+  .query(async ({ input: { tokenId, page, limit, days } }) => {
+    const where: any = { tokenId }
+    if (days) {
+      const now = new Date()
+      const ago = new Date()
+      ago.setDate(now.getDate() - days)
+      where['createdAt'] = {
+        gte: ago
+      }
+    }
     const items = await prisma.tradeLog.findMany({
-      where: {
-        tokenId,
-      },
+      where,
       orderBy: {
         createdAt: 'desc',
       },
