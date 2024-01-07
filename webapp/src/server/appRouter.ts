@@ -4,6 +4,8 @@ import { createServerSideHelpers } from '@trpc/react-query/server'
 import { Prisma } from '@prisma/client'
 import * as R from 'ramda'
 import { fetch, ProxyAgent, setGlobalDispatcher } from 'undici'
+import Arweave from 'arweave'
+import { formatUnits } from 'viem'
 
 import { publicProcedure, protectedProcedure, router } from './router'
 import { createInternalContext } from './context'
@@ -308,6 +310,53 @@ const deleteQuestion = protectedProcedure
       }
     })
     return result
+  })
+
+const uploadQuestionMetadata = protectedProcedure
+  .input(z.object({
+    questionId: z.number(),
+  }))
+  .mutation(async ({ input: { questionId }, ctx: { currentUser } }) => {
+    const where = { id: questionId }
+    const question = await prisma.question.findUnique({ where })
+    if (!question) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
+    }
+    const arweave = Arweave.init({
+      host: 'arweave.net',
+      protocol: 'https',
+      port: 443,
+    })
+    const wallet = JSON.parse(process.env.AR_KEY!)
+    const metadata = {
+      name: `DeQ NFT #${questionId}`,
+      description: `Question #${questionId}`,
+      external_url: `https://deq.lol/questions/view/${questionId}`,
+      attributes: [
+        {
+          trait_type: 'Title',
+          value: question.title
+        },
+        {
+          trait_type: 'Body',
+          value: question.body
+        },
+        {
+          trait_type: 'Reward',
+          value: formatUnits(question.totalDeposit, 10)
+        },
+      ]
+    }
+    const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
+    tx.addTag('Content-Type', 'application/json')
+    await arweave.transactions.sign(tx, wallet)
+    const uploader = await arweave.transactions.getUploader(tx)
+    while (!uploader.isComplete) {
+      await uploader.uploadChunk()
+    }
+    return {
+      uri: `ar://${tx.id}`
+    }
   })
 
 const createAnswer = protectedProcedure
@@ -734,6 +783,7 @@ export const appRouter = router({
     getUserCreated: getUserCreatedQuestions,
     getUserAnswered: getUserAnsweredQuestions,
     delete: deleteQuestion,
+    uploadMetadata: uploadQuestionMetadata
   }),
   answers: router({
     create: createAnswer,

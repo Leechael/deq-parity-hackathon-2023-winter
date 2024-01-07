@@ -26,6 +26,7 @@
     "@trpc/next": "^10.43.3",
     "@trpc/react-query": "^10.43.3",
     "@trpc/server": "^10.43.3",
+    "arweave": "^1.14.4",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "decimal.js": "^10.4.3",
