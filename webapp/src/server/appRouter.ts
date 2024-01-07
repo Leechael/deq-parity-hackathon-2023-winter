@@ -329,7 +329,7 @@ const uploadQuestionMetadata = protectedProcedure
     })
     const wallet = JSON.parse(process.env.AR_KEY!)
     const metadata = {
-      name: `DeQ NFT #${questionId}`,
+      name: `DeQ NFT Question #${questionId}`,
       description: `Question #${questionId}`,
       external_url: `https://deq.lol/questions/view/${questionId}`,
       attributes: [
@@ -456,6 +456,42 @@ const pickAnswer = protectedProcedure
         picked
       }
     })
+  })
+
+const uploadAnswerMetadata = protectedProcedure
+  .input(z.object({
+    tokenId: z.number(),
+    questionId: z.number(),
+    body: z.string(),
+  }))
+  .mutation(async ({ input: { tokenId, questionId, body }, ctx: { currentUser } }) => {
+    const arweave = Arweave.init({
+      host: 'arweave.net',
+      protocol: 'https',
+      port: 443,
+    })
+    const wallet = JSON.parse(process.env.AR_KEY!)
+    const metadata = {
+      name: `DeQ NFT Answer #${tokenId}`,
+      description: `Answer #${tokenId}`,
+      external_url: `https://deq.lol/questions/view/${questionId}`,
+      attributes: [
+        {
+          trait_type: 'Body',
+          value: body
+        },
+      ]
+    }
+    const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
+    tx.addTag('Content-Type', 'application/json')
+    await arweave.transactions.sign(tx, wallet)
+    const uploader = await arweave.transactions.getUploader(tx)
+    while (!uploader.isComplete) {
+      await uploader.uploadChunk()
+    }
+    return {
+      uri: `ar://${tx.id}`
+    }
   })
 
 const setUserHandleName = protectedProcedure
@@ -792,6 +828,7 @@ export const appRouter = router({
     holders: getAnswerHolders,
     getByQuestionId: getAnswersByQuestionId,
     pick: pickAnswer,
+    uploadMetadata: uploadAnswerMetadata
   }),
   users: router({
     info: getUserInfo,
