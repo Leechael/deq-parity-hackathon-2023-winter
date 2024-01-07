@@ -127,26 +127,9 @@ export function AnswerData({ id }: { id: number }) {
   )
 }
 
-interface ArrayItem {
-  aca: number;
-  createdAt: string;
-}
-
 function AnswerLineChart({ tokenId }: { tokenId: number }) {
   const [days, setDays] = useState(30)
   const { data, isLoading } = trpcQuery.answers.tradeHistory.useQuery({ tokenId, days })
-
-  const filterArray = (arr: ArrayItem[]): ArrayItem[] => {
-    const uniqueCreatedAtValues: Record<string, number> = {}
-    arr.forEach(item => {
-      const { aca, createdAt } = item
-      if (!uniqueCreatedAtValues[createdAt] || aca < uniqueCreatedAtValues[createdAt]) {
-        uniqueCreatedAtValues[createdAt] = aca
-      }
-    })
-    const resultArray = arr.filter(item => item.aca === uniqueCreatedAtValues[item.createdAt])
-    return resultArray
-  }
 
   return (
     <div className="py-12 pt-6 flex-col flex gap-y-6">
@@ -171,10 +154,10 @@ function AnswerLineChart({ tokenId }: { tokenId: number }) {
             </div>
           ) : (
             <LineChart
-              data={data && data.items ? filterArray(data.items.map(item => ({
+              data={data && data.items ? data.items.map(item => ({
                 aca: Number(formatEther(item.tokens)),
                 createdAt: dayjs(item.createdAt).format('h:mm A MMM D'),
-              }))) : []}
+              })) : []}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
