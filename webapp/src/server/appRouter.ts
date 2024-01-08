@@ -159,13 +159,13 @@ const listLatestQuestions = publicProcedure
     return {
       items: sorted.map((question) => ({
         ...question,
-        totalDeposit: BigInt(question.totalDeposit),
+        totalDeposit: BigInt(question.totalDeposit.toString()),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
-          pricePerShare: BigInt(answer.pricePerShare),
-          values: BigInt(answer.values),
-          shares: BigInt(answer.shares),
+          pricePerShare: BigInt(answer.pricePerShare.toString()),
+          values: BigInt(answer.values.toString()),
+          shares: BigInt(answer.shares.toString()),
           user: transformRegisteredUser(answer.user),
         })),
       }))
@@ -185,7 +185,7 @@ const createQuestion = protectedProcedure
         title,
         body,
         userId: currentUser.id,
-        totalDeposit: amount,
+        totalDeposit: amount.toString(),
       },
       include: {
         user: true,
@@ -193,7 +193,7 @@ const createQuestion = protectedProcedure
     })
     return {
       ...question,
-      totalDeposit: BigInt(question.totalDeposit),
+      totalDeposit: BigInt(question.totalDeposit.toString()),
       user: transformRegisteredUser(question.user),
     }
   })
@@ -215,7 +215,7 @@ const getQuestionById = publicProcedure
     }
     return {
       ...question,
-      totalDeposit: BigInt(question.totalDeposit),
+      totalDeposit: BigInt(question.totalDeposit.toString()),
       user: transformRegisteredUser(question.user),
     }
   })
@@ -247,13 +247,13 @@ const getUserCreatedQuestions = publicProcedure
     return {
       items: items.map((question) => ({
         ...question,
-        totalDeposit: BigInt(question.totalDeposit),
+        totalDeposit: BigInt(question.totalDeposit.toString()),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
-          pricePerShare: BigInt(answer.pricePerShare),
-          values: BigInt(answer.values),
-          shares: BigInt(answer.shares),
+          pricePerShare: BigInt(answer.pricePerShare.toString()),
+          values: BigInt(answer.values.toString()),
+          shares: BigInt(answer.shares.toString()),
           user: transformRegisteredUser(answer.user),
         })),
       }))
@@ -291,13 +291,13 @@ const getUserAnsweredQuestions = publicProcedure
     return {
       items: items.map((question) => ({
         ...question,
-        totalDeposit: BigInt(question.totalDeposit),
+        totalDeposit: BigInt(question.totalDeposit.toString()),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
-          pricePerShare: BigInt(answer.pricePerShare),
-          values: BigInt(answer.values),
-          shares: BigInt(answer.shares),
+          pricePerShare: BigInt(answer.pricePerShare.toString()),
+          values: BigInt(answer.values.toString()),
+          shares: BigInt(answer.shares.toString()),
           user: transformRegisteredUser(answer.user),
           question_creator_id: question.userId,
         })),
@@ -357,7 +357,7 @@ const uploadQuestionMetadata = protectedProcedure
         },
         {
           trait_type: 'Reward',
-          value: formatUnits(question.totalDeposit, 10)
+          value: formatUnits(BigInt(question.totalDeposit.toString()), 10)
         },
       ]
     }
@@ -411,6 +411,13 @@ const getAnswer = publicProcedure
     }
     return {
       ...answer,
+      pricePerShare: BigInt(answer.pricePerShare.toString()),
+      values: BigInt(answer.values.toString()),
+      shares: BigInt(answer.shares.toString()),
+      question: {
+        ...answer.question,
+        totalDeposit: BigInt(answer.question.totalDeposit.toString()),
+      },
       user: transformRegisteredUser(answer.user),
     }
   })
@@ -451,9 +458,9 @@ const getAnswersByQuestionId = publicProcedure
     return {
       items: items.map((answer, idx) => ({
         ...answer,
-        pricePerShare: BigInt(answer.pricePerShare),
-        values: BigInt(answer.values),
-        shares: BigInt(answer.shares),
+        pricePerShare: BigInt(answer.pricePerShare.toString()),
+        values: BigInt(answer.values.toString()),
+        shares: BigInt(answer.shares.toString()),
         user: transformRegisteredUser(answer.user),
         question_creator_id: answer.question.userId,
       }))
@@ -587,6 +594,9 @@ const getAnswerTradeHistory = publicProcedure
     return {
       items: items.map((log) => ({
         ...log,
+        amount: BigInt(log.amount.toString()),
+        tokens: BigInt(log.tokens.toString()),
+        creatorFee: BigInt(log.creatorFee.toString()),
         user: log.user ? transformRegisteredUser(log.user) : null,
       }))
     }
@@ -622,7 +632,7 @@ const getAnswerHolders = publicProcedure
     return {
       items: items.map((holder) => ({
         ...holder,
-        shares: BigInt(holder.shares),
+        shares: BigInt(holder.shares.toString()),
         user: transformRegisteredUser(holder.user),
       }))
     }
@@ -679,16 +689,16 @@ const getUserHoldings = publicProcedure
     return {
       items: items.map((holder) => ({
         ...holder,
-        shares: BigInt(holder.shares),
+        shares: BigInt(holder.shares.toString()),
         answer: {
           ...holder.answer,
-          pricePerShare: BigInt(holder.answer.pricePerShare),
-          values: BigInt(holder.answer.values),
-          shares: BigInt(holder.answer.shares),
+          pricePerShare: BigInt(holder.answer.pricePerShare.toString()),
+          values: BigInt(holder.answer.values.toString()),
+          shares: BigInt(holder.answer.shares.toString()),
           user: transformRegisteredUser(holder.answer.user),
           question: {
             ...holder.answer.question,
-            totalDeposit: BigInt(holder.answer.question.totalDeposit),
+            totalDeposit: BigInt(holder.answer.question.totalDeposit.toString()),
             user: transformRegisteredUser(holder.answer.question.user),
           },
         },
@@ -745,14 +755,14 @@ const getUserRewards = publicProcedure
     return {
       items: items.map(({ question, ...answer }) => ({
         ...question,
-        totalDeposit: BigInt(question.totalDeposit),
+        totalDeposit: BigInt(question.totalDeposit.toString()),
         user: transformRegisteredUser(question.user),
         answers: [
           {
             ...answer,
-            pricePerShare: BigInt(answer.pricePerShare),
-            values: BigInt(answer.values),
-            shares: BigInt(answer.shares),
+            pricePerShare: BigInt(answer.pricePerShare.toString()),
+            values: BigInt(answer.values.toString()),
+            shares: BigInt(answer.shares.toString()),
             user: transformRegisteredUser(answer.user),
           }
         ]
@@ -806,14 +816,14 @@ const getUserAnswers = publicProcedure
     const ret = {
       items: items.map(({ question, ...answer }) => ({
         ...question,
-        totalDeposit: BigInt(question.totalDeposit),
+        totalDeposit: BigInt(question.totalDeposit.toString()),
         user: transformRegisteredUser(question.user),
         answers: [
           {
             ...answer,
-            pricePerShare: BigInt(answer.pricePerShare),
-            values: BigInt(answer.values),
-            shares: BigInt(answer.shares),
+            pricePerShare: BigInt(answer.pricePerShare.toString()),
+            values: BigInt(answer.values.toString()),
+            shares: BigInt(answer.shares.toString()),
             user: transformRegisteredUser(answer.user),
           }
         ]
