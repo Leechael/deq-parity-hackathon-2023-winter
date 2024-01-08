@@ -71,7 +71,7 @@ export function AnswerView({ id }: { id: number }) {
         <div className="mt-4 border-t border-gray pt-4 flex flex-row justify-between items-center">
           <div>
             <Typography variant="h3">
-              {formatEther(data?.pricePerShare || BigInt(0))}
+              {formatEther(BigInt(data?.pricePerShare ?? 0))}
               <span className="font-light text-sm ml-1.5">ACA / Share</span>
             </Typography>
           </div>
