@@ -159,9 +159,13 @@ const listLatestQuestions = publicProcedure
     return {
       items: sorted.map((question) => ({
         ...question,
+        totalDeposit: BigInt(question.totalDeposit),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
+          pricePerShare: BigInt(answer.pricePerShare),
+          values: BigInt(answer.values),
+          shares: BigInt(answer.shares),
           user: transformRegisteredUser(answer.user),
         })),
       }))
@@ -189,6 +193,7 @@ const createQuestion = protectedProcedure
     })
     return {
       ...question,
+      totalDeposit: BigInt(question.totalDeposit),
       user: transformRegisteredUser(question.user),
     }
   })
@@ -210,6 +215,7 @@ const getQuestionById = publicProcedure
     }
     return {
       ...question,
+      totalDeposit: BigInt(question.totalDeposit),
       user: transformRegisteredUser(question.user),
     }
   })
@@ -241,9 +247,13 @@ const getUserCreatedQuestions = publicProcedure
     return {
       items: items.map((question) => ({
         ...question,
+        totalDeposit: BigInt(question.totalDeposit),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
+          pricePerShare: BigInt(answer.pricePerShare),
+          values: BigInt(answer.values),
+          shares: BigInt(answer.shares),
           user: transformRegisteredUser(answer.user),
         })),
       }))
@@ -281,9 +291,13 @@ const getUserAnsweredQuestions = publicProcedure
     return {
       items: items.map((question) => ({
         ...question,
+        totalDeposit: BigInt(question.totalDeposit),
         user: transformRegisteredUser(question.user),
         answers: question.answers.map((answer) => ({
           ...answer,
+          pricePerShare: BigInt(answer.pricePerShare),
+          values: BigInt(answer.values),
+          shares: BigInt(answer.shares),
           user: transformRegisteredUser(answer.user),
           question_creator_id: question.userId,
         })),
@@ -437,6 +451,9 @@ const getAnswersByQuestionId = publicProcedure
     return {
       items: items.map((answer, idx) => ({
         ...answer,
+        pricePerShare: BigInt(answer.pricePerShare),
+        values: BigInt(answer.values),
+        shares: BigInt(answer.shares),
         user: transformRegisteredUser(answer.user),
         question_creator_id: answer.question.userId,
       }))
@@ -605,6 +622,7 @@ const getAnswerHolders = publicProcedure
     return {
       items: items.map((holder) => ({
         ...holder,
+        shares: BigInt(holder.shares),
         user: transformRegisteredUser(holder.user),
       }))
     }
@@ -661,11 +679,16 @@ const getUserHoldings = publicProcedure
     return {
       items: items.map((holder) => ({
         ...holder,
+        shares: BigInt(holder.shares),
         answer: {
           ...holder.answer,
+          pricePerShare: BigInt(holder.answer.pricePerShare),
+          values: BigInt(holder.answer.values),
+          shares: BigInt(holder.answer.shares),
           user: transformRegisteredUser(holder.answer.user),
           question: {
             ...holder.answer.question,
+            totalDeposit: BigInt(holder.answer.question.totalDeposit),
             user: transformRegisteredUser(holder.answer.question.user),
           },
         },
@@ -722,10 +745,14 @@ const getUserRewards = publicProcedure
     return {
       items: items.map(({ question, ...answer }) => ({
         ...question,
+        totalDeposit: BigInt(question.totalDeposit),
         user: transformRegisteredUser(question.user),
         answers: [
           {
             ...answer,
+            pricePerShare: BigInt(answer.pricePerShare),
+            values: BigInt(answer.values),
+            shares: BigInt(answer.shares),
             user: transformRegisteredUser(answer.user),
           }
         ]
@@ -776,18 +803,31 @@ const getUserAnswers = publicProcedure
       skip: (page - 1) * limit,
       take: limit,
     })
-    return {
+    const ret = {
       items: items.map(({ question, ...answer }) => ({
         ...question,
+        totalDeposit: BigInt(question.totalDeposit),
         user: transformRegisteredUser(question.user),
         answers: [
           {
             ...answer,
+            pricePerShare: BigInt(answer.pricePerShare),
+            values: BigInt(answer.values),
+            shares: BigInt(answer.shares),
             user: transformRegisteredUser(answer.user),
           }
         ]
       }))
     }
+    try {
+      const s = z.object({
+        items: z.array(QuestionSchema)
+      })
+      s.parse(ret)
+    } catch (err) {
+      console.error(err)
+    }
+    return ret
   })
 
 const getTokenPairs = publicProcedure
