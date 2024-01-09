@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link'
+import { useMemo } from 'react'
 import {
   Spinner,
   Card,
@@ -15,9 +16,33 @@ import { formatEther, formatUnits } from 'viem'
 
 import { trpcQuery } from '@/server/trpcProvider'
 import { MarkdownView } from '@/components/MarkdownView'
-import { formatRelativeTime } from '@/utils/datetime'
+import { formatRelativeTime, daysToNow } from '@/utils/datetime'
 import { formatNumber } from '@/utils/number'
 import { buyAnswerIdAtom, sellAnswerIdAtom } from './atoms'
+
+function estimateAprRewards(value: bigint, createdAt: Date) {
+  const days = daysToNow(createdAt)
+  if (days > 0) {
+    return BigInt((days * (0.1605 / 365) * Number(value)).toFixed())
+  }
+  return BigInt(0)
+}
+
+function RewardsSuffix({ value, createdAt }: { value: bigint, createdAt: Date }) {
+  const rewards = useMemo(() => formatEther(estimateAprRewards(value, createdAt)), [value, createdAt])
+  if (Number(rewards) < 0.0001) {
+    return null
+  }
+  const [left, right] = rewards.split('.')
+  return (
+    <span className="text-sm text-gray-500 pr-[1px]">
+      <span>+</span>
+      <span>{left}</span>
+      <span>.{right.substring(0, 4)}</span>
+      <span className="text-xs ml-0.5">DOT</span>
+    </span>
+  )
+}
 
 export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
   const { data, isLoading } = trpcQuery.questions.lastest.useQuery({ type })
@@ -112,10 +137,16 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
                   @{question.user.name}
                 </Typography>
               </Link>
+              <div className="border-t border-solid border-gray-300 text-gray-600 text-sm mt-4">
+                Created at {formatRelativeTime(question.createdAt)}
+              </div>
             </div>
-            <div className="ml-2.5">
-              <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatNumber(formatUnits(question.totalDeposit, 10))}</span>
-              <span className="text-gray-600 font-extralight text-sm ml-1">DOT</span>
+            <div className="ml-2.5 flex flex-col items-end">
+              <div>
+                <span className="slashed-zero lining-nums font-medium text-2xl text-red-600">{formatNumber(formatUnits(question.totalDeposit, 10))}</span>
+                <span className="text-gray-600 font-extralight text-sm ml-1">DOT</span>
+              </div>
+              <RewardsSuffix value={question.totalDeposit} createdAt={question.createdAt} />
             </div>
           </div>
         </Card>
