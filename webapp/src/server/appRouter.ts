@@ -432,7 +432,8 @@ const getAnswersByQuestionId = publicProcedure
     items: z.array(AnswerSchema.merge(z.object({
       question: z.object({
         id: z.number(),
-      })
+      }),
+      holders: z.number(),
     })))
   }))
   .query(async ({ input: { id, page, limit } }) => {
@@ -453,6 +454,11 @@ const getAnswersByQuestionId = publicProcedure
       include: {
         user: true,
         question: true,
+        _count: {
+          select: {
+            holders: true,
+          }
+        },
       },
     })
     return {
@@ -461,6 +467,7 @@ const getAnswersByQuestionId = publicProcedure
         pricePerShare: BigInt(answer.pricePerShare.toString()),
         values: BigInt(answer.values.toString()),
         shares: BigInt(answer.shares.toString()),
+        holders: Number(answer._count?.holders || 0) || 0,
         user: transformRegisteredUser(answer.user),
         question_creator_id: answer.question.userId,
       }))
