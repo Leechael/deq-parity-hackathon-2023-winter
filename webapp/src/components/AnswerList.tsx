@@ -158,7 +158,7 @@ export function AnswerList({ id }: { id: number }) {
           {
             session && session.user && session.user.id === answer.question_creator_id && sorted.length > 0 && !sorted[0].picked ? (
               <CardFooter>
-                {/* <Button loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button> */}
+                <Button disabled loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button>
               </CardFooter>
             ) : null
           }
