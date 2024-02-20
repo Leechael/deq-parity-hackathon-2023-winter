@@ -93,7 +93,7 @@ export function AnswerForm({ questionId }: { questionId: number }) {
                 size="lg"
               />
               <div className="flex justify-end mt-4">
-                <Button loading={isLoading || walletIsLoading || uploading} type="submit">Submit</Button>
+                <Button disabled loading={isLoading || walletIsLoading || uploading} type="submit">Submit</Button>
               </div>
             </div>
           </form>

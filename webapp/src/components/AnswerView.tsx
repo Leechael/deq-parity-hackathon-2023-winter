@@ -75,10 +75,10 @@ export function AnswerView({ id }: { id: number }) {
               <span className="font-light text-sm ml-1.5">ACA / Share</span>
             </Typography>
           </div>
-          <ButtonGroup color="yellow">
+          {/* <ButtonGroup color="yellow">
             <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
             <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
-          </ButtonGroup>
+          </ButtonGroup> */}
         </div>
       </CardBody>
     </Card>

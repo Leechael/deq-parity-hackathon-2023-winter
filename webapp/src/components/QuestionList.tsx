@@ -104,10 +104,10 @@ export function QuestionList({ type }: { type: 'hot' | 'unanswer' }) {
                         </Typography>
                       </Link>
                     </div>
-                    <ButtonGroup size="sm" color="yellow">
+                    {/* <ButtonGroup size="sm" color="yellow">
                       <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
                       <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
-                    </ButtonGroup>
+                    </ButtonGroup> */}
                   </div>
                 </div>
               </div>

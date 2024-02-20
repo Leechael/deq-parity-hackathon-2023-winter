@@ -879,12 +879,12 @@ const getTokenPairs = publicProcedure
 export const appRouter = router({
   questions: router({
     lastest: listLatestQuestions,
-    create: createQuestion,
+    // create: createQuestion,
     getById: getQuestionById,
     getUserCreated: getUserCreatedQuestions,
     getUserAnswered: getUserAnsweredQuestions,
-    delete: deleteQuestion,
-    uploadMetadata: uploadQuestionMetadata
+    // delete: deleteQuestion,
+    // uploadMetadata: uploadQuestionMetadata
   }),
   answers: router({
     create: createAnswer,
@@ -892,12 +892,12 @@ export const appRouter = router({
     tradeHistory: getAnswerTradeHistory,
     holders: getAnswerHolders,
     getByQuestionId: getAnswersByQuestionId,
-    pick: pickAnswer,
-    uploadMetadata: uploadAnswerMetadata
+    // pick: pickAnswer,
+    // uploadMetadata: uploadAnswerMetadata
   }),
   users: router({
     info: getUserInfo,
-    setHandleName: setUserHandleName,
+    // setHandleName: setUserHandleName,
     holdings: getUserHoldings,
     rewards: getUserRewards,
     answers: getUserAnswers,

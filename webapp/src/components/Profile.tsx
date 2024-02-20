@@ -78,7 +78,7 @@ export function Profile() {
               }
             </Typography>
             <div className="flex justify-end mt-10">
-              <Button onClick={() => setOpenUnstack(true)}>Unstack</Button>
+              <Button disabled onClick={() => setOpenUnstack(true)}>Unstack</Button>
             </div>
           </CardBody>
         </Card>

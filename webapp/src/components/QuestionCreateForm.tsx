@@ -222,7 +222,7 @@ export function QuestionCreateForm({
                 </Button>
               </div>
               <div className="flex justify-end mt-4">
-                <Button loading={uploading || rateIsLoading || isLoading || walletIsLoading || loading} type="submit">{actionButtonLabel}</Button>
+                <Button disabled loading={uploading || rateIsLoading || isLoading || walletIsLoading || loading} type="submit">{actionButtonLabel}</Button>
               </div>
             </div>
           </form>

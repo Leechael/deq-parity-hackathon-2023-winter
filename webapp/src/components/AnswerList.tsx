@@ -148,16 +148,16 @@ export function AnswerList({ id }: { id: number }) {
                   </div>
                 ) : null}
               </div>
-              <ButtonGroup size="sm" color="yellow">
+              {/* <ButtonGroup size="sm" color="yellow">
                 <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
                 <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
-              </ButtonGroup>
+              </ButtonGroup> */}
             </div>
           </CardBody>
           {
             session && session.user && session.user.id === answer.question_creator_id && sorted.length > 0 && !sorted[0].picked ? (
               <CardFooter>
-                <Button loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button>
+                {/* <Button loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button> */}
               </CardFooter>
             ) : null
           }
