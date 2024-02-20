@@ -41,6 +41,7 @@ export function AnswerList({ id }: { id: number }) {
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
 
+  // @ts-ignore
   const { mutate, isLoading: picking } = trpcQuery.answers.pick.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries()

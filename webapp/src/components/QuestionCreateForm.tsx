@@ -70,9 +70,12 @@ export function QuestionCreateForm({
     }
   }, [isConnected, connect])
 
+  // @ts-ignore
   const { mutateAsync, isLoading } = trpcQuery.questions.create.useMutation()
 
+  // @ts-ignore
   const { mutate: deleteMutate } = trpcQuery.questions.delete.useMutation()
+  // @ts-ignore
   const { mutateAsync: uploadMetadata, isLoading: uploading } = trpcQuery.questions.uploadMetadata.useMutation()
 
   const { data: rate, isLoading: rateIsLoading } = useContractRead({

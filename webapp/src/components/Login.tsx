@@ -28,6 +28,7 @@ const Login = () => {
   const [openDia, setOpenDia] = useState(false)
   const [handleInput, setHandleInput] = useState('')
   const [nameInput, setNameInput] = useState('')
+  // @ts-ignore
   const { mutateAsync: updateHandleName, isLoading: isSetHandleNameLoading, error: handleNameSetError, reset: resetHandleNameSetError } = trpcQuery.users.setHandleName.useMutation({
     onSuccess: updateSession,
   })

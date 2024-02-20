@@ -31,7 +31,8 @@ export function AnswerForm({ questionId }: { questionId: number }) {
       queryClient.invalidateQueries()
     }
   })
-  // const { mutateAsync: uploadMetadata, isLoading: uploading } = trpcQuery.answers.uploadMetadata.useMutation()
+  // @ts-ignore
+  const { mutateAsync: uploadMetadata, isLoading: uploading } = trpcQuery.answers.uploadMetadata.useMutation()
 
   const { address, isConnected } = useAccount()
   const { data: walletClient, isLoading: walletIsLoading } = useWalletClient()
@@ -54,31 +55,31 @@ export function AnswerForm({ questionId }: { questionId: number }) {
   })
 
   const handleSubmit= async (e: React.FormEvent<HTMLFormElement>) => {
-    // e.preventDefault()
-    // if (!walletClient) {
-    //   return
-    // }
-    // if (!nextId) {
-    //   console.log('Error: nextId should not empty.')
-    //   return
-    // }
-    // const tokenId = Number(nextId)
-    // const body = R.pathOr('', ['target', 'body', 'value'], e)
-    // const { uri } = await uploadMetadata({
-    //   questionId: Number(questionId),
-    //   tokenId,
-    //   body
-    // })
-    // const hash = await walletClient.writeContract({
-    //   chain: mandala,
-    //   address: ANSWER_CONTRACT_ADDRESS,
-    //   abi: parseAbi(abis),
-    //   functionName: 'create',
-    //   args: [address!, BigInt(questionId), uri],
-    // })
-    // console.log('block hash', hash)
-    // await mutateAsync({ questionId, tokenId, body })
-    // ;(e.target as HTMLFormElement)?.reset()
+    e.preventDefault()
+    if (!walletClient) {
+      return
+    }
+    if (!nextId) {
+      console.log('Error: nextId should not empty.')
+      return
+    }
+    const tokenId = Number(nextId)
+    const body = R.pathOr('', ['target', 'body', 'value'], e)
+    const { uri } = await uploadMetadata({
+      questionId: Number(questionId),
+      tokenId,
+      body
+    })
+    const hash = await walletClient.writeContract({
+      chain: mandala,
+      address: ANSWER_CONTRACT_ADDRESS,
+      abi: parseAbi(abis),
+      functionName: 'create',
+      args: [address!, BigInt(questionId), uri],
+    })
+    console.log('block hash', hash)
+    await mutateAsync({ questionId, tokenId, body })
+    ;(e.target as HTMLFormElement)?.reset()
   }
 
   return (
