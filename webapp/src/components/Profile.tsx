@@ -95,8 +95,8 @@ export function Profile() {
               }
             </Typography>
             <div className="flex justify-end mt-10 gap-2">
-              <Button onClick={() => setOpenSwap(true)}>Swap</Button>
-              <Button onClick={() => setOpenBridge(true)}>Bridge</Button>
+              <Button disabled onClick={() => setOpenSwap(true)}>Swap</Button>
+              <Button disabled onClick={() => setOpenBridge(true)}>Bridge</Button>
             </div>
           </CardBody>
         </Card>

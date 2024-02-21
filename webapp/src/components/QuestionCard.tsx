@@ -64,10 +64,10 @@ export function QuestionCard({ question }: { question: Question }) {
                     </Typography>
                   </Link>
                 </div>
-                {/* <ButtonGroup size="sm" variant="gradient" color="amber">
-                  <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
-                  <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
-                </ButtonGroup> */}
+                <ButtonGroup size="sm" variant="gradient" color="amber">
+                  <Button disabled onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+                  <Button disabled onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
+                </ButtonGroup>
               </div>
             </div>
           </div>

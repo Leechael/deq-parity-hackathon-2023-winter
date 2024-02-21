@@ -28,7 +28,6 @@ const Login = () => {
   const [openDia, setOpenDia] = useState(false)
   const [handleInput, setHandleInput] = useState('')
   const [nameInput, setNameInput] = useState('')
-  // @ts-ignore
   const { mutateAsync: updateHandleName, isLoading: isSetHandleNameLoading, error: handleNameSetError, reset: resetHandleNameSetError } = trpcQuery.users.setHandleName.useMutation({
     onSuccess: updateSession,
   })
@@ -104,7 +103,7 @@ const Login = () => {
       <div className="flex flex-col">
         <div className="flex flex-row gap-2.5">
           <Link href="/questions/create">
-            <Button className="bg-[#4C4C4C] text-white rounded-full">Create Question</Button>
+            <Button disabled className="bg-[#4C4C4C] text-white rounded-full">Create Question</Button>
           </Link>
           <Link href="/me">
             <Button className="flex flex-row gap-1.5 items-center" size="sm" variant="text">
@@ -114,7 +113,7 @@ const Login = () => {
           </Link>
           <Button onClick={() => signOut()} variant="text">Sign Out</Button>
         </div>
-        {/* <Button onClick={() => setOpenDia(true)}>open</Button> */}
+        <Button disabled onClick={() => setOpenDia(true)}>open</Button>
         <Dialog open={openDia} handler={() => setOpenDia(!openDia)} dismiss={{ enabled: false }}>
           <DialogBody>
             <form className="flex flex-col gap-6">
@@ -179,6 +178,7 @@ const Login = () => {
   }
   return (
     <Button
+      disabled
       onClick={() => isConnected ? signIn('credentials') : connect()}
       loading={status === 'loading'}
       variant="outlined"

@@ -64,11 +64,11 @@ export function QuestionCreateForm({
 
   const router = useRouter()
 
-  useEffect(() => {
-    if (!isConnected) {
-      connect()
-    }
-  }, [isConnected, connect])
+  // useEffect(() => {
+  //   if (!isConnected) {
+  //     connect()
+  //   }
+  // }, [isConnected, connect])
 
   // @ts-ignore
   const { mutateAsync, isLoading } = trpcQuery.questions.create.useMutation()
