@@ -37,11 +37,11 @@ export function AnswerForm({ questionId }: { questionId: number }) {
   const { data: walletClient, isLoading: walletIsLoading } = useWalletClient()
   const { connect } = useConnect({ connector: new InjectedConnector() })
 
-  useEffect(() => {
-    if (!isConnected) {
-      connect()
-    }
-  }, [isConnected, connect])
+  // useEffect(() => {
+  //   if (!isConnected) {
+  //     connect()
+  //   }
+  // }, [isConnected, connect])
 
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork({ chainId: mandala.id })
@@ -93,7 +93,7 @@ export function AnswerForm({ questionId }: { questionId: number }) {
                 size="lg"
               />
               <div className="flex justify-end mt-4">
-                <Button loading={isLoading || walletIsLoading || uploading} type="submit">Submit</Button>
+                <Button disabled loading={isLoading || walletIsLoading || uploading} type="submit">Submit</Button>
               </div>
             </div>
           </form>

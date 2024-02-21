@@ -76,8 +76,8 @@ export function AnswerView({ id }: { id: number }) {
             </Typography>
           </div>
           <ButtonGroup color="yellow">
-            <Button onClick={() => setBuyAnswerId(id)}>Buy</Button>
-            <Button onClick={() => setSellAnswerId(id)}>Sell</Button>
+            <Button disabled onClick={() => setBuyAnswerId(id)}>Buy</Button>
+            <Button disabled onClick={() => setSellAnswerId(id)}>Sell</Button>
           </ButtonGroup>
         </div>
       </CardBody>

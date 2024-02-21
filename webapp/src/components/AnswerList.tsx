@@ -41,6 +41,7 @@ export function AnswerList({ id }: { id: number }) {
   const setBuyAnswerId = useSetAtom(buyAnswerIdAtom)
   const setSellAnswerId = useSetAtom(sellAnswerIdAtom)
 
+  // @ts-ignore
   const { mutate, isLoading: picking } = trpcQuery.answers.pick.useMutation({
     onSuccess: () => {
       queryClient.invalidateQueries()
@@ -149,15 +150,15 @@ export function AnswerList({ id }: { id: number }) {
                 ) : null}
               </div>
               <ButtonGroup size="sm" color="yellow">
-                <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
-                <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
+                <Button disabled onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+                <Button disabled onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
               </ButtonGroup>
             </div>
           </CardBody>
           {
             session && session.user && session.user.id === answer.question_creator_id && sorted.length > 0 && !sorted[0].picked ? (
               <CardFooter>
-                <Button loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button>
+                <Button disabled loading={pending || picking || walletIsLoading} onClick={() => handlePick(answer)}>Pick</Button>
               </CardFooter>
             ) : null
           }

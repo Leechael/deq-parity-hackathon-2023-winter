@@ -180,22 +180,25 @@ const createQuestion = protectedProcedure
   }))
   .output(QuestionSchema.omit({ answers: true }))
   .mutation(async ({ input: { title, body, amount }, ctx: { currentUser } }) => {
-    const question = await prisma.question.create({
-      data: {
-        title,
-        body,
-        userId: currentUser.id,
-        totalDeposit: amount.toString(),
-      },
-      include: {
-        user: true,
-      }
-    })
-    return {
-      ...question,
-      totalDeposit: BigInt(question.totalDeposit.toString()),
-      user: transformRegisteredUser(question.user),
-    }
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // const question = await prisma.question.create({
+    //   data: {
+    //     title,
+    //     body,
+    //     userId: currentUser.id,
+    //     totalDeposit: amount.toString(),
+    //   },
+    //   include: {
+    //     user: true,
+    //   }
+    // })
+    // return {
+    //   ...question,
+    //   totalDeposit: BigInt(question.totalDeposit.toString()),
+    //   user: transformRegisteredUser(question.user),
+    // }
   })
 
 const getQuestionById = publicProcedure
@@ -310,20 +313,23 @@ const deleteQuestion = protectedProcedure
     questionId: z.number(),
   }))
   .mutation(async ({ input: { questionId }, ctx: { currentUser } }) => {
-    const where = { id: questionId }
-    const question = await prisma.question.findUnique({ where })
-    if (!question) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
-    }
-    if (question.userId !== currentUser.id) {
-      throw new TRPCError({ code: 'BAD_REQUEST' })
-    }
-    const result = await prisma.question.delete({
-      where: {
-        id: questionId,
-      }
-    })
-    return result
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // const where = { id: questionId }
+    // const question = await prisma.question.findUnique({ where })
+    // if (!question) {
+    //   throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
+    // }
+    // if (question.userId !== currentUser.id) {
+    //   throw new TRPCError({ code: 'BAD_REQUEST' })
+    // }
+    // const result = await prisma.question.delete({
+    //   where: {
+    //     id: questionId,
+    //   }
+    // })
+    // return result
   })
 
 const uploadQuestionMetadata = protectedProcedure
@@ -331,46 +337,49 @@ const uploadQuestionMetadata = protectedProcedure
     questionId: z.number(),
   }))
   .mutation(async ({ input: { questionId }, ctx: { currentUser } }) => {
-    const where = { id: questionId }
-    const question = await prisma.question.findUnique({ where })
-    if (!question) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
-    }
-    const arweave = Arweave.init({
-      host: 'arweave.net',
-      protocol: 'https',
-      port: 443,
-    })
-    const wallet = JSON.parse(process.env.AR_KEY!)
-    const metadata = {
-      name: `DeQ NFT Question #${questionId}`,
-      description: `Question #${questionId}`,
-      external_url: `https://deq.lol/questions/view/${questionId}`,
-      attributes: [
-        {
-          trait_type: 'Title',
-          value: question.title
-        },
-        {
-          trait_type: 'Body',
-          value: question.body
-        },
-        {
-          trait_type: 'Reward',
-          value: formatUnits(BigInt(question.totalDeposit.toString()), 10)
-        },
-      ]
-    }
-    const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
-    tx.addTag('Content-Type', 'application/json')
-    await arweave.transactions.sign(tx, wallet)
-    const uploader = await arweave.transactions.getUploader(tx)
-    while (!uploader.isComplete) {
-      await uploader.uploadChunk()
-    }
-    return {
-      uri: `ar://${tx.id}`
-    }
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // const where = { id: questionId }
+    // const question = await prisma.question.findUnique({ where })
+    // if (!question) {
+    //   throw new TRPCError({ code: 'NOT_FOUND', message: 'Question not found' })
+    // }
+    // const arweave = Arweave.init({
+    //   host: 'arweave.net',
+    //   protocol: 'https',
+    //   port: 443,
+    // })
+    // const wallet = JSON.parse(process.env.AR_KEY!)
+    // const metadata = {
+    //   name: `DeQ NFT Question #${questionId}`,
+    //   description: `Question #${questionId}`,
+    //   external_url: `https://deq.lol/questions/view/${questionId}`,
+    //   attributes: [
+    //     {
+    //       trait_type: 'Title',
+    //       value: question.title
+    //     },
+    //     {
+    //       trait_type: 'Body',
+    //       value: question.body
+    //     },
+    //     {
+    //       trait_type: 'Reward',
+    //       value: formatUnits(BigInt(question.totalDeposit.toString()), 10)
+    //     },
+    //   ]
+    // }
+    // const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
+    // tx.addTag('Content-Type', 'application/json')
+    // await arweave.transactions.sign(tx, wallet)
+    // const uploader = await arweave.transactions.getUploader(tx)
+    // while (!uploader.isComplete) {
+    //   await uploader.uploadChunk()
+    // }
+    // return {
+    //   uri: `ar://${tx.id}`
+    // }
   })
 
 const createAnswer = protectedProcedure
@@ -481,12 +490,15 @@ const pickAnswer = protectedProcedure
     picked: z.boolean().default(false),
   }))
   .mutation(async ({ input: { id, picked }, ctx: { currentUser } }) => {
-    await prisma.answer.update({
-      where: { id },
-      data: {
-        picked
-      }
-    })
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // await prisma.answer.update({
+    //   where: { id },
+    //   data: {
+    //     picked
+    //   }
+    // })
   })
 
 const uploadAnswerMetadata = protectedProcedure
@@ -496,33 +508,36 @@ const uploadAnswerMetadata = protectedProcedure
     body: z.string(),
   }))
   .mutation(async ({ input: { tokenId, questionId, body }, ctx: { currentUser } }) => {
-    const arweave = Arweave.init({
-      host: 'arweave.net',
-      protocol: 'https',
-      port: 443,
-    })
-    const wallet = JSON.parse(process.env.AR_KEY!)
-    const metadata = {
-      name: `DeQ NFT Answer #${tokenId}`,
-      description: `Answer #${tokenId}`,
-      external_url: `https://deq.lol/questions/view/${questionId}`,
-      attributes: [
-        {
-          trait_type: 'Body',
-          value: body
-        },
-      ]
-    }
-    const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
-    tx.addTag('Content-Type', 'application/json')
-    await arweave.transactions.sign(tx, wallet)
-    const uploader = await arweave.transactions.getUploader(tx)
-    while (!uploader.isComplete) {
-      await uploader.uploadChunk()
-    }
-    return {
-      uri: `ar://${tx.id}`
-    }
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // const arweave = Arweave.init({
+    //   host: 'arweave.net',
+    //   protocol: 'https',
+    //   port: 443,
+    // })
+    // const wallet = JSON.parse(process.env.AR_KEY!)
+    // const metadata = {
+    //   name: `DeQ NFT Answer #${tokenId}`,
+    //   description: `Answer #${tokenId}`,
+    //   external_url: `https://deq.lol/questions/view/${questionId}`,
+    //   attributes: [
+    //     {
+    //       trait_type: 'Body',
+    //       value: body
+    //     },
+    //   ]
+    // }
+    // const tx = await arweave.createTransaction({ data: JSON.stringify(metadata) }, wallet)
+    // tx.addTag('Content-Type', 'application/json')
+    // await arweave.transactions.sign(tx, wallet)
+    // const uploader = await arweave.transactions.getUploader(tx)
+    // while (!uploader.isComplete) {
+    //   await uploader.uploadChunk()
+    // }
+    // return {
+    //   uri: `ar://${tx.id}`
+    // }
   })
 
 const setUserHandleName = protectedProcedure
@@ -532,19 +547,22 @@ const setUserHandleName = protectedProcedure
     check: z.boolean().default(false),
   }))
   .mutation(async ({ input: { handle, name, check }, ctx: { currentUser } }) => {
-    const existHandleUser = await prisma.user.findUnique({ where: { handle } })
-    if (existHandleUser) {
-      throw new TRPCError({ code: 'CONFLICT', message: 'Handle exists' })
-    }
-    if (!check) {
-      const user = await prisma.user.update({
-        where: { id: currentUser.id },
-        data: {
-          handle, name
-        }
-      })
-      return user
-    }
+
+    throw new TRPCError({ code: 'BAD_REQUEST' })
+
+    // const existHandleUser = await prisma.user.findUnique({ where: { handle } })
+    // if (existHandleUser) {
+    //   throw new TRPCError({ code: 'CONFLICT', message: 'Handle exists' })
+    // }
+    // if (!check) {
+    //   const user = await prisma.user.update({
+    //     where: { id: currentUser.id },
+    //     data: {
+    //       handle, name
+    //     }
+    //   })
+    //   return user
+    // }
   })
 
 const getUserInfo = publicProcedure

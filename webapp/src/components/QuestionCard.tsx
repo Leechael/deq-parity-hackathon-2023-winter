@@ -65,8 +65,8 @@ export function QuestionCard({ question }: { question: Question }) {
                   </Link>
                 </div>
                 <ButtonGroup size="sm" variant="gradient" color="amber">
-                  <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
-                  <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
+                  <Button disabled onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+                  <Button disabled onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
                 </ButtonGroup>
               </div>
             </div>

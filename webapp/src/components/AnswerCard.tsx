@@ -55,8 +55,8 @@ export function AnswerCard({ answer }: { answer: Omit<Answer, 'question_creator_
             </Link>
           </div>
           <ButtonGroup size="sm" color="yellow">
-            <Button onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
-            <Button onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
+            <Button disabled onClick={() => setBuyAnswerId(answer.id)}>Buy</Button>
+            <Button disabled onClick={() => setSellAnswerId(answer.id)}>Sell</Button>
           </ButtonGroup>
         </div>
       </CardBody>
